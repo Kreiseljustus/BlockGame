@@ -2,6 +2,8 @@
 
 #include <Window.h>
 
+#include "Input.h"
+
 int main() {
     if (!glfwInit()) {
         std::cout << "Failed to initialize GLFW" << std::endl;
@@ -15,6 +17,11 @@ int main() {
 
     Window window = Window(props);
     window.create();
+
+    Input input;
+    window.setInputHandler(&input);
+    window.setKeyCallback(Input::keyCallback);
+    window.setResizeCallback(Input::resizeCallback);
 
     while (!window.shouldClose()) {
         glClearColor(0.0, 0.0, 1.0, 1.0);

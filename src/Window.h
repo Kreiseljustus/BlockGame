@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <string>
 
+#include "Input.h"
 #include "math/Vector2.h"
 
 struct WindowProperties {
@@ -23,6 +24,7 @@ public:
     void create();
     void destroy();
 
+    void setInputHandler(Input* input) const;
     void setKeyCallback(GLFWkeyfun callback) const;
     void setResizeCallback(GLFWframebuffersizefun callback) const;
 

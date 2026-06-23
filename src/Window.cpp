@@ -35,11 +35,15 @@ void Window::destroy() {
     }
 }
 
+void Window::setInputHandler(Input *input) const{
+    glfwSetWindowUserPointer(m_Window, input);
+}
+
 void Window::setKeyCallback(const GLFWkeyfun callback) const {
     glfwSetKeyCallback(m_Window, callback);
 }
 
-void Window::setResizeCallback(GLFWframebuffersizefun callback) const {
+void Window::setResizeCallback(const GLFWframebuffersizefun callback) const {
     glfwSetFramebufferSizeCallback(m_Window, callback);
 }
 
