@@ -3,6 +3,7 @@
 #include <Window.h>
 
 #include "Input.h"
+#include "Shader.h"
 
 int main() {
     if (!glfwInit()) {
@@ -17,6 +18,10 @@ int main() {
 
     Window window = Window(props);
     window.create();
+
+    Shader shader;
+    shader.load("assets/shaders/BasicVertexShader.glsl", "assets/shaders/BasicFragmentShader.glsl");
+    shader.bind();
 
     Input input;
     window.setInputHandler(&input);

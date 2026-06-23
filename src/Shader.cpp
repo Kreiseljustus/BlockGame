@@ -1,5 +1,6 @@
 //
 // Created by crisel on 6/23/26.
+// TODO: Add fallback shader
 //
 
 #include "Shader.h"
@@ -10,10 +11,14 @@
 #include "GL/glew.h"
 
 void Shader::bind() {
-    glUseProgram(m_ShaderProgramID);
+    if (m_ShaderProgramID != 0) {
+        glUseProgram(m_ShaderProgramID);
+    } else {
+        std::cout << "Tried to bind unloaded shader!!! (Shader::bind)" << std::endl;
+    }
 }
 
-bool Shader::load(std::filesystem::path vertexShader, std::filesystem::path fragmentShader) {
+bool Shader::load(const std::filesystem::path& vertexShader, const std::filesystem::path& fragmentShader) {
     ShaderType vertexType;
     std::string vertexSrc;
 
@@ -31,6 +36,7 @@ bool Shader::load(std::filesystem::path vertexShader, std::filesystem::path frag
 
     if (fragmentType != ShaderType::FRAGMENT_SHADER) {
         std::cout << fragmentShader << " is not of type Fragment Shader! (Shader::load)" << std::endl;
+        return false;
     }
 
     unsigned int vertexShaderID = compileShader(vertexSrc, ShaderType::VERTEX_SHADER);
@@ -43,11 +49,18 @@ bool Shader::load(std::filesystem::path vertexShader, std::filesystem::path frag
 
     m_ShaderProgramID = linkShaderProgram(vertexShaderID, fragmentShaderID);
 
+    std::cout << "Loaded shader program from " << vertexShader << " and " << fragmentShader << std::endl;
+
     return true;
 }
 
-void Shader::loadFromFile(std::filesystem::path path, ShaderType *typeOut, std::string *sourceOut) {
+void Shader::loadFromFile(const std::filesystem::path& path, ShaderType *typeOut, std::string *sourceOut) {
     std::ifstream file(path, std::ios::in);
+
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file " << path << std::endl << "Absolute path of file: " << std::filesystem::absolute(path) << std::endl;
+        return;
+    }
 
     std::stringstream stream;
     stream << file.rdbuf();
@@ -62,12 +75,14 @@ void Shader::loadFromFile(std::filesystem::path path, ShaderType *typeOut, std::
     if (!foundType) {std::cout << "Failed to find shader type for " << path << std::endl; return;}
 
     *sourceOut = stream.str();
+    *sourceOut = sourceOut->substr(sourceOut->find('\n', 1));
 }
 
-unsigned int Shader::compileShader(std::string src, ShaderType type) {
-    unsigned int id = glCreateShader(type == ShaderType::VERTEX_SHADER ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
+unsigned int Shader::compileShader(const std::string& src, const ShaderType type) {
+    const unsigned int id = glCreateShader(type == ShaderType::VERTEX_SHADER ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
 
-    glShaderSource(id, 1, &src, NULL);
+    const GLchar* srcC = src.c_str();
+    glShaderSource(id, 1, &srcC, nullptr);
     glCompileShader(id);
 
     int success;
@@ -77,6 +92,7 @@ unsigned int Shader::compileShader(std::string src, ShaderType type) {
     if (!success) {
         glGetShaderInfoLog(id, 512, NULL, infoLog);
         std::cout << "Shader compilation failed! " << std::endl << infoLog << std::endl;
+        return 0;
     }
 
     return id;
@@ -90,11 +106,12 @@ unsigned int Shader::linkShaderProgram(unsigned int vertexShader, unsigned int f
 
     int success;
     char infoLog[512];
-    glGetShaderiv(id, GL_LINK_STATUS, &success);
+    glGetProgramiv(id, GL_LINK_STATUS, &success);
 
     if (!success) {
-        glGetShaderInfoLog(id, 512, NULL, infoLog);
-        std::cout << "Shader linking failed! " << std::endl; infoLog << std::endl;
+        glGetProgramInfoLog(id, 512, NULL, infoLog);
+        std::cout << "Shader linking failed! " << std::endl << infoLog << std::endl;
+        return 0;
     }
 
     return id;

@@ -16,13 +16,13 @@ class Shader {
 public:
     void bind();
 
-    bool load(std::filesystem::path vertexShader, std::filesystem::path fragmentShader);
+    bool load(const std::filesystem::path& vertexShader, const std::filesystem::path& fragmentShader);
 private:
-    void loadFromFile(std::filesystem::path path, ShaderType* typeOut, std::string* sourceOut);
-    unsigned int compileShader(std::string src, ShaderType type);
+    void loadFromFile(const std::filesystem::path& path, ShaderType* typeOut, std::string* sourceOut);
+    unsigned int compileShader(const std::string& src, ShaderType type);
     unsigned int linkShaderProgram(unsigned int vertexShader, unsigned int fragmentShader);
 private:
-    unsigned int m_ShaderProgramID;
+    unsigned int m_ShaderProgramID = 0;
 };
 
 
