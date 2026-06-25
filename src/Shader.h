@@ -17,6 +17,8 @@ public:
     void bind();
 
     bool load(const std::filesystem::path& vertexShader, const std::filesystem::path& fragmentShader);
+
+    [[nodiscard]] unsigned int id() {return m_ShaderProgramID;}
 private:
     void loadFromFile(const std::filesystem::path& path, ShaderType* typeOut, std::string* sourceOut);
     unsigned int compileShader(const std::string& src, ShaderType type);

@@ -114,5 +114,8 @@ unsigned int Shader::linkShaderProgram(unsigned int vertexShader, unsigned int f
         return 0;
     }
 
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
     return id;
 }
