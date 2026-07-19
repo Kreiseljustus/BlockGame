@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="1047" dy="558" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="808" dy="499" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -45,9 +45,6 @@
         </mxCell>
         <mxCell id="GnoTSnMVHyjGlIOE2RhC-21" parent="GnoTSnMVHyjGlIOE2RhC-19" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="Draw(MeshHandle) (Backend MeshHandle-&amp;gt;GPUMesh contains data)" vertex="1">
           <mxGeometry height="30" width="400" x="10" y="80" as="geometry" />
-        </mxCell>
-        <mxCell id="GnoTSnMVHyjGlIOE2RhC-22" parent="GnoTSnMVHyjGlIOE2RhC-19" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="DrawPrimitive(PrimitiveType, Transform, PrimitiveOptions (color, texture, shader))" vertex="1">
-          <mxGeometry height="30" width="400" x="10" y="110" as="geometry" />
         </mxCell>
         <mxCell id="GnoTSnMVHyjGlIOE2RhC-23" parent="GnoTSnMVHyjGlIOE2RhC-19" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="DrawDynamicBuffer(vertexData, int count, PrimitiveType)" vertex="1">
           <mxGeometry height="30" width="400" x="10" y="140" as="geometry" />
