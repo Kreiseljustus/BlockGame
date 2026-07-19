@@ -1,0 +1,75 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
+    <mxGraphModel dx="1047" dy="558" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-5" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="130" y="180" as="sourcePoint" />
+            <mxPoint x="130" y="180.2" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-10" parent="WIyWlLk6GJQsqaUBKTNV-1" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" value="&lt;div&gt;Renderer&lt;/div&gt;" vertex="1">
+          <mxGeometry height="280" width="420" x="20" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-13" parent="GnoTSnMVHyjGlIOE2RhC-10" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="IRenderBackend*" vertex="1">
+          <mxGeometry height="30" width="100" x="10" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-15" parent="GnoTSnMVHyjGlIOE2RhC-10" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="Submit (MeshHandle, MaterialHandle, Transform)" vertex="1">
+          <mxGeometry height="30" width="400" x="10" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-17" parent="GnoTSnMVHyjGlIOE2RhC-10" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="DrawLine(Pos a, Pos b, Color)" vertex="1">
+          <mxGeometry height="30" width="400" x="10" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-25" parent="GnoTSnMVHyjGlIOE2RhC-10" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="Begin()" vertex="1">
+          <mxGeometry height="30" width="400" x="10" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-26" parent="GnoTSnMVHyjGlIOE2RhC-10" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="End()" vertex="1">
+          <mxGeometry height="30" width="400" x="10" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-27" parent="GnoTSnMVHyjGlIOE2RhC-10" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="Flush()" vertex="1">
+          <mxGeometry height="30" width="400" x="10" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-28" parent="GnoTSnMVHyjGlIOE2RhC-10" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="List DrawCommand" vertex="1">
+          <mxGeometry height="30" width="400" x="10" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-29" parent="GnoTSnMVHyjGlIOE2RhC-10" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="CreateTexture() etc calls backend returns handle" vertex="1">
+          <mxGeometry height="30" width="400" x="10" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-19" parent="WIyWlLk6GJQsqaUBKTNV-1" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" value="IRenderBackend" vertex="1">
+          <mxGeometry height="230" width="420" x="550" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-20" parent="GnoTSnMVHyjGlIOE2RhC-19" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="ordered list &amp;lt;MeshHandle, GPUMesh&amp;gt;" vertex="1">
+          <mxGeometry height="30" width="380" x="10" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-21" parent="GnoTSnMVHyjGlIOE2RhC-19" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="Draw(MeshHandle) (Backend MeshHandle-&amp;gt;GPUMesh contains data)" vertex="1">
+          <mxGeometry height="30" width="400" x="10" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-22" parent="GnoTSnMVHyjGlIOE2RhC-19" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="DrawPrimitive(PrimitiveType, Transform, PrimitiveOptions (color, texture, shader))" vertex="1">
+          <mxGeometry height="30" width="400" x="10" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-23" parent="GnoTSnMVHyjGlIOE2RhC-19" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="DrawDynamicBuffer(vertexData, int count, PrimitiveType)" vertex="1">
+          <mxGeometry height="30" width="400" x="10" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-30" parent="GnoTSnMVHyjGlIOE2RhC-19" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="CreateTexture etc returns handle to gpu resource" vertex="1">
+          <mxGeometry height="30" width="400" x="10" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-37" parent="GnoTSnMVHyjGlIOE2RhC-19" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="Begin()" vertex="1">
+          <mxGeometry height="30" width="400" x="10" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-38" parent="GnoTSnMVHyjGlIOE2RhC-19" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="End()" vertex="1">
+          <mxGeometry height="30" width="400" x="10" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="GnoTSnMVHyjGlIOE2RhC-24" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="GnoTSnMVHyjGlIOE2RhC-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="GnoTSnMVHyjGlIOE2RhC-19">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="470" y="65" />
+              <mxPoint x="470" y="115" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
