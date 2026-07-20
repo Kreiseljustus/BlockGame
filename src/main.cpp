@@ -10,12 +10,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-int main() {
+#include "Rendering/Renderer.h"
+#include "Rendering/Backends/OpenGLBackend.h"
+
+int main(int arc, char* argv[]) {
     if (!glfwInit()) {
         std::cout << "Failed to initialize GLFW" << std::endl;
     }
-
-    std::cout << "T" << std::endl;
 
     WindowProperties props;
     props.width = 800;
@@ -25,6 +26,9 @@ int main() {
 
     Window window = Window(props);
     window.create();
+
+    auto backend = std::make_unique<OpenGLBackend>();
+    Renderer renderer = Renderer(std::move(backend));
 
     Shader shader;
     shader.load("assets/shaders/BasicVertexShader.glsl", "assets/shaders/BasicFragmentShader.glsl");
