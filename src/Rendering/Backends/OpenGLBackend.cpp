@@ -5,15 +5,19 @@
 #include "OpenGLBackend.h"
 
 void OpenGLBackend::Begin() {
+
 }
 
 void OpenGLBackend::End() {
+
 }
 
 void OpenGLBackend::Draw(MeshHandle) {
+    
 }
 
 void OpenGLBackend::DrawDynamicBuffer(void *vertexData, int count, PrimitiveType type) {
+
 }
 
 MeshHandle OpenGLBackend::CreateMesh(const MeshData &data) {

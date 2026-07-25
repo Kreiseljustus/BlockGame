@@ -18,6 +18,8 @@ int main(int arc, char* argv[]) {
         std::cout << "Failed to initialize GLFW" << std::endl;
     }
 
+    volatile bool useOpenGL = true;
+
     WindowProperties props;
     props.width = 800;
     props.height = 600;
@@ -27,7 +29,7 @@ int main(int arc, char* argv[]) {
     Window window = Window(props);
     window.create();
 
-    auto backend = std::make_unique<OpenGLBackend>();
+    auto backend = useOpenGL ? std::make_unique<OpenGLBackend>() : nullptr;
     Renderer renderer = Renderer(std::move(backend));
 
     Shader shader;

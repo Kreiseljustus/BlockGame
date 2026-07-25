@@ -18,9 +18,8 @@ public:
     virtual void DrawDynamicBuffer(void* vertexData, int count, PrimitiveType type) = 0;
 
     virtual MeshHandle CreateMesh(const MeshData& data) = 0;
-    //TODO
-    virtual TextureHandle CreateTexture() = 0;
-    virtual ShaderHandle CreateShader() = 0;
+    virtual TextureHandle CreateTexture(const TextureParameters& parameters) = 0;
+    virtual ShaderHandle CreateShader(const ShaderParameters& parameters) = 0;
 };
 
 #endif //BLOCKGAME_IRENDERBACKEND_H
