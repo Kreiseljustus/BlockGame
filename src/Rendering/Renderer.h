@@ -22,15 +22,16 @@ public:
     explicit Renderer(std::unique_ptr<IRenderBackend> render_backend) : m_RenderBackend(std::move(render_backend)) {}
 
     void Submit(MeshHandle mesh, Material material, Transform transform);
-    void DrawLine(Position3 a, Position3 b, Color color);
+    void DrawLine(Position3 a, Position3 b, Color color) const;
 
     void Begin();
     void End();
-    void Flush();
 
     void SwitchBackend(std::unique_ptr<IRenderBackend> render_backend) {End(); Flush(); m_RenderBackend.swap(render_backend);}
 
     //Resource creation methods etc
+private:
+    void Flush();
 private:
     std::unique_ptr<IRenderBackend> m_RenderBackend;
 

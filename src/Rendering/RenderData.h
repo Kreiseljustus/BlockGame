@@ -6,6 +6,7 @@
 #define BLOCKGAME_RENDERDATA_H
 #include <cstdint>
 #include <vector>
+#include <filesystem>
 
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
@@ -42,8 +43,8 @@ struct TextureParameters {
 };
 
 struct ShaderParameters {
-    const std::filesystem::path& vertexShader;
-    const std::filesystem::path& fragmentShader;
+    const std::filesystem::path vertexShader;
+    const std::filesystem::path fragmentShader;
 };
 
 struct MeshHandle {

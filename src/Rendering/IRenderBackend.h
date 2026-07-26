@@ -14,7 +14,7 @@ public:
     virtual void Begin() = 0;
     virtual void End() = 0;
 
-    virtual void Draw(MeshHandle) = 0;
+    virtual void Draw(MeshHandle, Material, Transform) = 0;
     virtual void DrawDynamicBuffer(void* vertexData, int count, PrimitiveType type) = 0;
 
     virtual MeshHandle CreateMesh(const MeshData& data) = 0;

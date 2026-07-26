@@ -14,12 +14,12 @@ public:
 
     void Begin() override;
     void End() override;
-    void Draw(MeshHandle) override;
+    void Draw(MeshHandle, Material, Transform) override;
     void DrawDynamicBuffer(void *vertexData, int count, PrimitiveType type) override;
 
     MeshHandle CreateMesh(const MeshData &data) override;
-    TextureHandle CreateTexture() override;
-    ShaderHandle CreateShader() override;
+    TextureHandle CreateTexture(const TextureParameters& parameters) override;
+    ShaderHandle CreateShader(const ShaderParameters& parameters) override;
 
 private:
 };
