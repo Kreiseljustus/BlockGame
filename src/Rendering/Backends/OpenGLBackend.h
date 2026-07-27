@@ -5,6 +5,7 @@
 #ifndef BLOCKGAME_OPENGLBACKEND_H
 #define BLOCKGAME_OPENGLBACKEND_H
 
+#include "GL/glew.h"
 #include "Rendering/IRenderBackend.h"
 #include "Rendering/RenderData.h"
 
@@ -22,6 +23,14 @@ public:
     ShaderHandle CreateShader(const ShaderParameters& parameters) override;
 
 private:
+    struct GPUMesh {
+        GLuint vao = 0;
+        GLuint vbo = 0;
+        GLuint ebo = 0;
+        uint32_t indexCount = 0;
+    };
+
+    std::vector<GPUMesh> m_Meshes;
 };
 
 

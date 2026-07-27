@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "ResourceManager.h"
 #include "Rendering/Renderer.h"
 #include "Rendering/Backends/OpenGLBackend.h"
 
@@ -29,6 +30,11 @@ int main(int arc, char* argv[]) {
     Window window = Window(props);
     window.create();
 
+    std::cout << ResourceManager::LoadShader("assets/shaders/BasicVertexShader.glsl", "assets/shaders/BasicFragmentShader.glsl", "basic").handle;
+
+    std::cout << std::endl;
+    std::cout << ResourceManager::GetShader("basic").handle;
+
     auto backend = useOpenGL ? std::make_unique<OpenGLBackend>() : nullptr;
     Renderer renderer = Renderer(std::move(backend));
 
@@ -38,14 +44,13 @@ int main(int arc, char* argv[]) {
     window.setResizeCallback(Input::resizeCallback);
 
     while (!window.shouldClose()) {
-
+        glfwPollEvents();
         renderer.Begin();
 
         renderer.Submit({0}, {0,0}, {{},{}});
 
         renderer.End();
 
-        glfwPollEvents();
         glfwSwapBuffers(window.getWindow());
     }
 

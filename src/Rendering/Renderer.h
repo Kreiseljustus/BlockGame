@@ -30,6 +30,9 @@ public:
     void SwitchBackend(std::unique_ptr<IRenderBackend> render_backend) {End(); Flush(); m_RenderBackend.swap(render_backend);}
 
     //Resource creation methods etc
+    [[nodiscard]] MeshHandle CreateMesh(const MeshData& data) const {return m_RenderBackend->CreateMesh(data);}
+    [[nodiscard]] TextureHandle CreateTexture(const TextureParameters& parameters) const {return m_RenderBackend->CreateTexture(parameters);}
+    [[nodiscard]] ShaderHandle CreateShader(const ShaderParameters& parameters) const {return m_RenderBackend->CreateShader(parameters);}
 private:
     void Flush();
 private:

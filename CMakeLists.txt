@@ -74,7 +74,31 @@ FetchContent_Declare(
         GIT_TAG        v3.3.0
 )
 
-FetchContent_MakeAvailable(glfw glew glm stb lua sol2)
+# --- Assimp (model/scene import) ---
+FetchContent_Declare(
+        assimp
+        GIT_REPOSITORY https://github.com/assimp/assimp.git
+        GIT_TAG        v5.4.3
+)
+
+# Trim the build: we only need import (not export), and only formats
+# we actually use. Building every importer + exporter + tests/samples
+# adds several minutes to a clean build for no benefit here.
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ZLIB ON CACHE BOOL "" FORCE)   # avoid relying on a system zlib
+set(ASSIMP_NO_EXPORT ON CACHE BOOL "" FORCE)    # we only load models, never write them
+
+# Only enable the importers we actually need -- massively cuts build time.
+# Add more ASSIMP_BUILD_*_IMPORTER lines below as needed.
+set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_GLTF_IMPORTER ON CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_OBJ_IMPORTER ON CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_FBX_IMPORTER ON CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(glfw glew glm stb lua sol2 assimp)
 
 # stb is header-only with no CMakeLists.txt of its own; expose it as an
 # interface target so we can link against it like any other dependency.
@@ -115,6 +139,7 @@ target_link_libraries(BlockGame PRIVATE
         stb
         lua::lua
         sol2::sol2
+        assimp::assimp
 )
 
 if(WIN32)
