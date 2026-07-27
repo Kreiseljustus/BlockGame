@@ -10,6 +10,8 @@
 
 #include "GL/glew.h"
 
+using namespace Engine::Rendering;
+
 void Shader::bind() {
     if (m_ShaderProgramID != 0) {
         glUseProgram(m_ShaderProgramID);

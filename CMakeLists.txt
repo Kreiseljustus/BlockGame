@@ -19,6 +19,8 @@ endforeach()
 include(FetchContent)
 set(FETCHCONTENT_QUIET OFF)
 
+
+
 # Some fetched dependencies (e.g. glew-cmake) ship a CMakeLists.txt with an
 # outdated `cmake_minimum_required`, which newer CMake versions reject outright.
 # This tells CMake to apply policies as if that old minimum were valid instead
@@ -75,6 +77,7 @@ FetchContent_Declare(
 )
 
 # --- Assimp (model/scene import) ---
+set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
         assimp
         GIT_REPOSITORY https://github.com/assimp/assimp.git
@@ -106,57 +109,9 @@ add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE ${stb_SOURCE_DIR})
 
 # ---------------------------------------------------------------------------
-# Executable
+# Subprojects
 # ---------------------------------------------------------------------------
-# NOTE: GLOB_RECURSE already picks up every .cpp/.c under src/, including
-# Window.cpp. Do NOT also list individual source files in add_executable()
-# below -- doing so adds them a second time, causing duplicate symbol
-# definitions at link time. Headers (.h) don't need to be listed at all for
-# compilation to work; CLion only wants them listed so they show up in the
-# project tree, which isn't necessary here since GLOB_RECURSE only matches
-# .cpp/.c anyway.
-file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS
-        ${CMAKE_SOURCE_DIR}/src/*.cpp
-        ${CMAKE_SOURCE_DIR}/src/*.c
-)
-
-add_executable(BlockGame ${GAME_SOURCES})
-
-target_include_directories(BlockGame PRIVATE
-        ${CMAKE_SOURCE_DIR}/src
-)
-
-# Required since we're statically linking GLEW (glew-cmake_BUILD_STATIC=ON
-# above) -- without this define, GLEW's headers assume dynamic linking,
-# which can cause inconsistent/garbage state at runtime (e.g. glewInit()
-# returning an unrecognized error code instead of a real GLEW_* error).
-target_compile_definitions(BlockGame PRIVATE GLEW_STATIC)
-
-target_link_libraries(BlockGame PRIVATE
-        glfw
-        libglew_static
-        glm::glm
-        stb
-        lua::lua
-        sol2::sol2
-        assimp::assimp
-)
-
-if(WIN32)
-    target_link_libraries(BlockGame PRIVATE opengl32)
-elseif(APPLE)
-    target_link_libraries(BlockGame PRIVATE "-framework OpenGL")
-else()
-    find_package(OpenGL REQUIRED)
-    target_link_libraries(BlockGame PRIVATE OpenGL::GL)
-endif()
-
-# ---------------------------------------------------------------------------
-# Copy assets/ next to the built executable after every build
-# ---------------------------------------------------------------------------
-add_custom_command(TARGET BlockGame POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/assets
-        $<TARGET_FILE_DIR:BlockGame>/assets
-        COMMENT "Copying assets/ to output directory"
-)
+# Engine must come first -- Sandbox and Editor both link against it.
+add_subdirectory(Engine)
+add_subdirectory(Sandbox)
+add_subdirectory(Editor)

@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+using namespace Engine;
+
 void Window::create() {
 
     glfwWindowHint(GLFW_VISIBLE, !m_Hidden);

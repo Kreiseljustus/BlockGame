@@ -8,6 +8,8 @@
 
 #include "GL/glew.h"
 
+using namespace Engine::Rendering;
+
 void OpenGLBackend::Begin() {
     glClearColor(255,0,0,255);
     glClear(GL_COLOR_BUFFER_BIT);

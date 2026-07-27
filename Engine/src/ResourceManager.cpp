@@ -6,7 +6,11 @@
 
 #include <iostream>
 
+using namespace Engine;
+using namespace Engine::Rendering;
+
 std::unordered_map<std::string, Shader> ResourceManager::s_Shaders;
+std::unordered_map<std::string, MeshData> ResourceManager::s_Meshes;
 
 ShaderHandle ResourceManager::LoadShader(std::filesystem::path vertex, const std::filesystem::path& fragment, const std::string& givenName) {
     Shader s = Shader();
