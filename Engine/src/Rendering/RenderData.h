@@ -16,6 +16,29 @@
 //hex codes from glew
 
 namespace Engine::Rendering {
+
+    enum class ProjectionType {
+        Perspective,
+        Orthographic
+    };
+
+    struct Camera {
+        glm::vec3 position;
+        glm::vec3 rotation = {0,0,0};
+
+        ProjectionType projection = ProjectionType::Orthographic;
+
+        //perspective only
+        float fov = 60.0f;
+        float aspect = 800.0f / 600.0f;
+
+        //ortho only
+        float orthoSize = 10.0f;
+
+        float nearPlane = 0.1f;
+        float farPlane = 1000.0f;
+    };
+
     enum TextureType : int {
         TEXTURE_2D = 0x0DE1,
         TEXTURE_3D = 0x806F,

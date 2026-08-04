@@ -7,9 +7,10 @@
 using namespace Engine;
 
 void Input::handleKey(int key, int scancode, int action, int mods) {
-    switch (key) {
-        default:
-            std::cout << "Input for key " << key << " is unhandled!" << std::endl;
+    if (action == GLFW_PRESS) {
+        m_KeyState[key] = true;
+    } else if (action == GLFW_RELEASE) {
+        m_KeyState[key] = false;
     }
 }
 

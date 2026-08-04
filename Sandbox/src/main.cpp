@@ -44,12 +44,38 @@ int main(int arc, char* argv[]) {
 	window.setKeyCallback(Input::keyCallback);
 	window.setResizeCallback(Input::resizeCallback);
 
-	while (!window.shouldClose()) {
-		glfwPollEvents();
-		renderer.Begin();
+	int worldHeight = 500;
 
-		glm::vec3 pos = {0,0,0.7};
-		renderer.Submit(test_handle, {test_Shader_handle.handle, 0}, {pos, {270,0,0}, {1,1,1}});
+	Camera camera;
+	camera.projection = ProjectionType::Orthographic;
+	camera.position = {0,0,5};
+	camera.orthoSize = 3.0f;
+	camera.aspect = static_cast<float>(window.getFrameBufferSize().x) / static_cast<float>(window.getFrameBufferSize().y);
+
+	double lastTime = glfwGetTime();
+
+	while (!window.shouldClose()) {
+		double now = glfwGetTime();
+		float deltaTime = static_cast<float>(now - lastTime);
+		lastTime = now;
+
+		glfwPollEvents();
+		camera.aspect = static_cast<float>(window.getFrameBufferSize().x) / static_cast<float>(window.getFrameBufferSize().y);
+
+		const float speed = 2.0f;
+		if (input.IsKeyDown(GLFW_KEY_W)) camera.position.y += speed * deltaTime;
+		if (input.IsKeyDown(GLFW_KEY_S)) camera.position.y -= speed * deltaTime;
+		if (input.IsKeyDown(GLFW_KEY_A)) camera.position.x -= speed * deltaTime;
+		if (input.IsKeyDown(GLFW_KEY_D)) camera.position.x += speed * deltaTime;
+		if (input.IsKeyDown(GLFW_KEY_LEFT)) camera.rotation.y += 10 * deltaTime;
+		if (input.IsKeyDown(GLFW_KEY_RIGHT)) camera.rotation.y -= 10 *deltaTime;
+
+		renderer.Begin(camera);
+
+		for (int i = 0; i < 100; i++) {
+			glm::vec3 pos = {i * 3,0,0.7};
+			renderer.Submit(test_handle, {test_Shader_handle.handle, 0}, {pos, {270,0,0}, {1,1,1}});
+		}
 
 		renderer.End();
 

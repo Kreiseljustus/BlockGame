@@ -25,7 +25,7 @@ namespace Engine::Rendering {
         void Submit(MeshHandle mesh, Material material, Transform transform);
         void DrawLine(glm::vec3 a, glm::vec3 b, Color color) const;
 
-        void Begin();
+        void Begin(const Camera& camera);
         void End();
 
         void SwitchBackend(std::unique_ptr<IRenderBackend> render_backend) {End(); Flush(); m_RenderBackend.swap(render_backend);}
