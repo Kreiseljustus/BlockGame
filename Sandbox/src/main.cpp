@@ -29,10 +29,15 @@ int main(int arc, char* argv[]) {
 	std::cout << ResourceManager::LoadShader("assets/shaders/BasicVertexShader.glsl", "assets/shaders/BasicFragmentShader.glsl", "basic").handle;
 
 	std::cout << std::endl;
-	std::cout << ResourceManager::GetShader("basic").handle;
+	ShaderHandle test_Shader_handle = ResourceManager::GetShader("basic");
+
+	MeshData test_data = ResourceManager::LoadMesh("assets/meshes/test.fbx", "monkey");
+
 
 	auto backend = useOpenGL ? std::make_unique<OpenGLBackend>() : nullptr;
 	Renderer renderer = Renderer(std::move(backend));
+
+	MeshHandle test_handle = renderer.CreateMesh(test_data);
 
 	Input input;
 	window.setInputHandler(&input);
@@ -43,7 +48,8 @@ int main(int arc, char* argv[]) {
 		glfwPollEvents();
 		renderer.Begin();
 
-		//renderer.Submit({0}, {0,0}, {{},{}});
+		glm::vec3 pos = {0,0,0.7};
+		renderer.Submit(test_handle, {test_Shader_handle.handle, 0}, {pos, {270,0,0}, {1,1,1}});
 
 		renderer.End();
 

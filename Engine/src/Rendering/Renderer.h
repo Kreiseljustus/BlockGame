@@ -23,7 +23,7 @@ namespace Engine::Rendering {
         explicit Renderer(std::unique_ptr<IRenderBackend> render_backend) : m_RenderBackend(std::move(render_backend)) {}
 
         void Submit(MeshHandle mesh, Material material, Transform transform);
-        void DrawLine(Position3 a, Position3 b, Color color) const;
+        void DrawLine(glm::vec3 a, glm::vec3 b, Color color) const;
 
         void Begin();
         void End();

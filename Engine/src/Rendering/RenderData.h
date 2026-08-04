@@ -11,6 +11,7 @@
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
+#include <glm/glm.hpp>
 
 //hex codes from glew
 
@@ -82,12 +83,8 @@ namespace Engine::Rendering {
         std::vector<uint32_t> indices;
     };
 
-    struct Position3 {
-        glm::vec3 xyz;
-    };
-
     struct Transform {
-        Position3 position;
+        glm::vec3 position;
         glm::vec3 rotation;
         glm::vec3 scale;
     };

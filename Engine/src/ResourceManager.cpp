@@ -6,6 +6,11 @@
 
 #include <iostream>
 
+#include "assimp/Importer.hpp"
+#include "assimp/mesh.h"
+#include "assimp/postprocess.h"
+#include "assimp/scene.h"
+
 using namespace Engine;
 using namespace Engine::Rendering;
 
@@ -19,8 +24,9 @@ ShaderHandle ResourceManager::LoadShader(std::filesystem::path vertex, const std
         return {0};
     }
 
+    const unsigned int id = s.id();
     s_Shaders.emplace(givenName, std::move(s));
-    return {s.id()};
+    return {id};
 }
 
 ShaderHandle ResourceManager::GetShader(std::string name) {
@@ -32,7 +38,30 @@ ShaderHandle ResourceManager::GetShader(std::string name) {
 }
 
 MeshData ResourceManager::LoadMesh(std::filesystem::path meshFile, std::string alias) {
+    Assimp::Importer importer;
+    const aiScene* scene = importer.ReadFile(meshFile.string(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals | aiProcess_GenUVCoords);
+    const aiMesh* mesh = scene->mMeshes[0];
 
+    MeshData data;
+
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+        Vertex v{};
+        v.normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+        v.position = {mesh->mVertices[i].x,mesh->mVertices[i].y,mesh->mVertices[i].z};
+        v.uv = {0,0};
+
+        data.vertices.push_back(v);
+    }
+
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+        aiFace face = mesh->mFaces[i];
+        for (unsigned int j = 0; j < face.mNumIndices; j++) {
+            data.indices.push_back(face.mIndices[j]);
+        }
+    }
+
+    s_Meshes.emplace(alias, data);
+    return data;
 }
 
 MeshData ResourceManager::GetMesh(std::string alias) {

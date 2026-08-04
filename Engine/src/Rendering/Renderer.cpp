@@ -10,7 +10,7 @@ void Engine::Rendering::Renderer::Submit(const MeshHandle mesh, const Material m
     m_DrawCommands.emplace_back(DrawCommand{mesh, material, transform});
 }
 
-void Engine::Rendering::Renderer::DrawLine(Position3 a, Position3 b, Color color) const {
+void Engine::Rendering::Renderer::DrawLine(glm::vec3 a, glm::vec3 b, Color color) const {
     m_RenderBackend->DrawDynamicBuffer(nullptr, 0, TRIANGLES);
 }
 
