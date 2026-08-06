@@ -13,10 +13,11 @@ namespace Engine {
     class Input {
     public:
         void handleKey(int key, int scancode, int action, int mods);
-        void handleResize(int width, int height);
 
-        bool IsKeyDown(int key) const {
-            auto it = m_KeyState.find(key);
+        static void handleResize(int width, int height);
+
+        bool IsKeyDown(const int key) const {
+            const auto it = m_KeyState.find(key);
             return it != m_KeyState.end() && it->second;
         }
 
@@ -29,7 +30,7 @@ namespace Engine {
         static void resizeCallback(GLFWwindow* window, const int width, const int height) {
             auto* self = static_cast<Input*>(glfwGetWindowUserPointer(window));
             if (!self) { std::cout << "No input setup for window " << window << std::endl; return; }
-            self->handleResize(width, height);
+            handleResize(width, height);
         }
 
     private:

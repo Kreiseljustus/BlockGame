@@ -19,10 +19,10 @@ int main(int arc, char* argv[]) {
 	volatile bool useOpenGL = true;
 
 	WindowProperties props;
-	props.width = 800;
-	props.height = 600;
-	props.hidden = false;
-	props.title = "Block Game";
+	props.Width = 800;
+	props.Height = 600;
+	props.Hidden = false;
+	props.Title = "Block Game";
 
 	Window window = Window(props);
 	window.create();
@@ -82,6 +82,7 @@ int main(int arc, char* argv[]) {
 			glm::vec3 pos = {i * 3,0,0.7};
 			renderer.Submit(test_handle, {test_Shader_handle.handle, tHandle.handle}, {pos, {270,0,0}, {1,1,1}});
 		}
+		
 
 		renderer.End();
 

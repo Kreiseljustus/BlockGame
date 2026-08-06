@@ -6,7 +6,7 @@
 
 using namespace Engine;
 
-void Input::handleKey(int key, int scancode, int action, int mods) {
+void Input::handleKey(const int key, int scancode, const int action, int mods) {
     if (action == GLFW_PRESS) {
         m_KeyState[key] = true;
     } else if (action == GLFW_RELEASE) {

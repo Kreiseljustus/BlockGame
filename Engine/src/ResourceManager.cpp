@@ -17,7 +17,7 @@ using namespace Engine::Rendering;
 std::unordered_map<std::string, Shader> ResourceManager::s_Shaders;
 std::unordered_map<std::string, MeshData> ResourceManager::s_Meshes;
 
-ShaderHandle ResourceManager::LoadShader(std::filesystem::path vertex, const std::filesystem::path& fragment, const std::string& givenName) {
+ShaderHandle ResourceManager::LoadShader(const std::filesystem::path& vertex, const std::filesystem::path& fragment, const std::string& alias) {
     Shader s = Shader();
     if (!s.load(vertex,fragment)) {
         std::cout << "Failed to load shader " << vertex << " and " << fragment << std::endl;
@@ -25,19 +25,19 @@ ShaderHandle ResourceManager::LoadShader(std::filesystem::path vertex, const std
     }
 
     const unsigned int id = s.id();
-    s_Shaders.emplace(givenName, std::move(s));
+    s_Shaders.emplace(alias, std::move(s));
     return {id};
 }
 
-ShaderHandle ResourceManager::GetShader(std::string name) {
+ShaderHandle ResourceManager::GetShader(const std::string& alias) {
     try {
-        return {s_Shaders.at(name).id()};
+        return {s_Shaders.at(alias).id()};
     } catch (const std::out_of_range&) {
         return {0};
     }
 }
 
-MeshData ResourceManager::LoadMesh(std::filesystem::path meshFile, std::string alias) {
+MeshData ResourceManager::LoadMesh(const std::filesystem::path& meshFile, std::string alias) {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(meshFile.string(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals | aiProcess_GenUVCoords);
     const aiMesh* mesh = scene->mMeshes[0];
@@ -69,7 +69,7 @@ MeshData ResourceManager::LoadMesh(std::filesystem::path meshFile, std::string a
     return data;
 }
 
-MeshData ResourceManager::GetMesh(std::string alias) {
+MeshData ResourceManager::GetMesh(const std::string& alias) {
     try {
         return s_Meshes.at(alias);
     } catch (const std::out_of_range&) {

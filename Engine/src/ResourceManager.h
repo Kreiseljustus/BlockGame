@@ -11,13 +11,14 @@
 #include "Rendering/RenderData.h"
 
 namespace Engine {
+    //TODO: Move shaders into IRenderBackend
     class ResourceManager {
     public:
-        static Rendering::ShaderHandle LoadShader(std::filesystem::path vertex, const std::filesystem::path& fragment, const std::string& alias);
-        static Rendering::ShaderHandle GetShader(std::string alias);
+        static Rendering::ShaderHandle LoadShader(const std::filesystem::path& vertex, const std::filesystem::path& fragment, const std::string& alias);
+        static Rendering::ShaderHandle GetShader(const std::string& alias);
 
-        static Rendering::MeshData LoadMesh(std::filesystem::path meshFile, std::string alias);
-        static Rendering::MeshData GetMesh(std::string alias);
+        static Rendering::MeshData LoadMesh(const std::filesystem::path& meshFile, std::string alias);
+        static Rendering::MeshData GetMesh(const std::string& alias);
     private:
         static std::unordered_map<std::string, Rendering::Shader> s_Shaders;
         static std::unordered_map<std::string, Rendering::MeshData> s_Meshes;

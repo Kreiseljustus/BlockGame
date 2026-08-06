@@ -24,7 +24,7 @@ void OpenGLBackend::End() {
 
 }
 
-void OpenGLBackend::Draw(MeshHandle mesh, Material material, Transform transform) {
+void OpenGLBackend::Draw(const MeshHandle mesh, const Material material, const Transform transform) {
     if (mesh.handle > m_Meshes.size() || mesh.handle < 0) {
         std::cout << "Invalid mesh handle: " << mesh.handle << std::endl;
         return;
@@ -44,10 +44,10 @@ void OpenGLBackend::Draw(MeshHandle mesh, Material material, Transform transform
 
     glm::mat4 mvp = m_Proj * m_View * model;
 
-    GLint mvpLoc = glGetUniformLocation(material.shaderHandle, "transform");
+    const GLint mvpLoc = glGetUniformLocation(material.shaderHandle, "transform");
 
     if (mvpLoc == -1) {
-        std::cout << "Uniform not found!" << std::endl;
+        std::cout << "Uniform not found!" << " transform" << std::endl;
     }
 
     glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, &mvp[0][0]);
@@ -58,12 +58,12 @@ void OpenGLBackend::Draw(MeshHandle mesh, Material material, Transform transform
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(TEXTURE_2D, tex.id);
 
-        GLint texLoc = glGetUniformLocation(material.shaderHandle, "textureA");
+        const GLint texLoc = glGetUniformLocation(material.shaderHandle, "textureA");
         glUniform1i(texLoc, 0);
     }
 
     glBindVertexArray(gpuMesh.vao);
-    glDrawElements(GL_TRIANGLES, gpuMesh.indexCount, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, static_cast<int>(gpuMesh.indexCount), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }
 
@@ -88,13 +88,13 @@ MeshHandle OpenGLBackend::CreateMesh(const MeshData &data) {
 
     //TODO: Add support for different vertex layouts!!!
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, position)));
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, normal)));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, uv)));
     glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
@@ -120,7 +120,7 @@ TextureHandle OpenGLBackend::CreateTexture(const TextureParameters& parameters) 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, parameters.filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, parameters.filter);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, tex.format, tex.width, tex.height, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(tex.format), tex.width, tex.height, 0,
              tex.format, parameters.dataType, parameters.imageData);
 
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -133,7 +133,7 @@ ShaderHandle OpenGLBackend::CreateShader(const ShaderParameters &parameters) {
     return {0};
 }
 
-void OpenGLBackend::UpdateTexture(TextureHandle handle, const void *pixelData) {
+void OpenGLBackend::UpdateTexture(const TextureHandle handle, const void *pixelData) {
     if (handle.handle >= m_Textures.size()) {
         std::cout << "Invalid texture handle: " << handle.handle << std::endl;
         return;

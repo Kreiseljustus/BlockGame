@@ -10,15 +10,16 @@
 
 namespace Engine {
     struct WindowProperties {
-        int width = 600, height = 600;
-        std::string title = "New Window";
-        bool hidden = false;
+        int Width = 600, Height = 600;
+        std::string Title = "New Window";
+        bool Hidden = false;
+        bool CreateOpenGLContext = true;
     };
 
     class Window {
     public:
-        explicit Window(const WindowProperties& properties) : m_Title(properties.title), m_Width(properties.width)
-        , m_Height(properties.height), m_Hidden(properties.hidden) {}
+        explicit Window(const WindowProperties& properties) : m_Title(properties.Title), m_Width(properties.Width)
+        , m_Height(properties.Height), m_Hidden(properties.Hidden), m_CreateOpenGLContext(properties.CreateOpenGLContext) {}
 
         ~Window() {destroy();}
 
@@ -42,6 +43,7 @@ namespace Engine {
         std::string m_Title;
         int m_Width, m_Height;
         bool m_Hidden;
+        bool m_CreateOpenGLContext;
     };
 }
 
