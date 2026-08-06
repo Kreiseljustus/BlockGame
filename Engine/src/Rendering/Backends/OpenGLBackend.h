@@ -14,7 +14,7 @@
 namespace Engine::Rendering {
     class OpenGLBackend : public IRenderBackend{
     public:
-        OpenGLBackend() = default;
+        OpenGLBackend();
 
         void Begin() override;
         void End() override;
