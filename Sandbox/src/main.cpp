@@ -6,10 +6,11 @@
 
 #include <ResourceManager.h>
 #include <stb_image.h>
+#include <bits/this_thread_sleep.h>
 #include <Rendering/Renderer.h>
 #include <Rendering/Backends/OpenGLBackend.h>
 
-#include <Rendering/PrimitiveProvier.h>
+#include <Rendering/PrimitiveProvider.h>
 
 using namespace Engine::Rendering;
 using namespace Engine;
@@ -34,7 +35,7 @@ bool CheckAABBCollision(const Transform& a, const Transform& b) {
 
 struct Player {
 	Transform t;
-	float timeAlive;
+	float timeAlive = 0;
 	bool alive = true;
 };
 
@@ -42,6 +43,7 @@ int main(int arc, char* argv[]) {
 	if (!glfwInit()) {
 		std::cout << "Failed to initialize GLFW" << std::endl;
 	}
+
 
 	std::vector<Enemy> enemies;
 	const int maxTimeAlivePerEnemy = 10;
@@ -72,9 +74,7 @@ int main(int arc, char* argv[]) {
 	Window window = Window(props);
 	window.create();
 
-	glEnable(GL_DEPTH_TEST);
-
-	 ResourceManager::LoadShader("assets/shaders/BasicVertexShader.glsl", "assets/shaders/BasicFragmentShader.glsl", "basic");
+	ResourceManager::LoadShader("assets/shaders/BasicVertexShader.glsl", "assets/shaders/BasicFragmentShader.glsl", "basic");
 	ShaderHandle test_Shader_handle = ResourceManager::GetShader("basic");
 
 	TextureParameters tParams;
@@ -84,6 +84,7 @@ int main(int arc, char* argv[]) {
 	auto backend = useOpenGL ? std::make_unique<OpenGLBackend>() : nullptr;
 	Renderer renderer = Renderer(std::move(backend));
 
+	TextureHandle tHandle = renderer.CreateTexture(tParams);
 	MeshHandle quad = renderer.CreateMesh(GetUnitQuad());
 
 	Input input;
@@ -99,13 +100,17 @@ int main(int arc, char* argv[]) {
 
 	double lastTime = glfwGetTime();
 
-	srand(time(nullptr));
+	srand(rand() * time(nullptr));
 
 	while (!window.shouldClose()) {
 		double now = glfwGetTime();
 		auto deltaTime = static_cast<float>(now - lastTime);
 		lastTime = now;
 		totalGameTime += deltaTime;
+
+		std::string title = "Block Game ";
+		title.append(std::to_string(1.0f/deltaTime));
+		glfwSetWindowTitle(window.getWindow(), title.c_str());
 
 		float spawnInterval = std::max(minSpawnTime, baseSpawnTime * std::exp(-decayRate * totalGameTime));
 
@@ -119,6 +124,14 @@ int main(int arc, char* argv[]) {
 		}
 		if (input.IsKeyDown(GLFW_KEY_W)) p.t.position.y += deltaTime * pSpeed;
 		if (input.IsKeyDown(GLFW_KEY_S)) p.t.position.y -= deltaTime * pSpeed;
+
+		const float boundX = 2.75f * camera.aspect;
+		const float boundY = 2.15f * camera.aspect;
+
+		p.t.position.x = std::clamp(p.t.position.x, -boundX, boundX);
+		p.t.position.y = std::clamp(p.t.position.y, -boundY, boundY);
+
+		p.timeAlive += deltaTime;
 
 		camera.aspect = static_cast<float>(window.getFrameBufferSize().x) / static_cast<float>(window.getFrameBufferSize().y);
 
@@ -160,7 +173,7 @@ int main(int arc, char* argv[]) {
 			}
 		}
 
-		renderer.Submit(quad, {test_Shader_handle, {0}}, p.t);
+		renderer.Submit(quad, {test_Shader_handle, tHandle}, p.t);
 		renderer.End();
 
 		glfwSwapBuffers(window.getWindow());
