@@ -1,0 +1,305 @@
+@startuml
+enum "Engine::Rendering::ProjectionType" as C_0002886508483453525476
+enum C_0002886508483453525476 {
+Perspective
+Orthographic
+}
+class "Engine::Rendering::Camera" as C_0003719779346828084050
+class C_0003719779346828084050 {
+__
++aspect : float
++farPlane : float
++fov : float
++nearPlane : float
++orthoSize : float
++position : glm::vec3
++projection : ProjectionType
++rotation : glm::vec3
+}
+enum "Engine::Rendering::TextureType" as C_0002502947422070324512
+enum C_0002502947422070324512 {
+TEXTURE_2D
+TEXTURE_3D
+TEXTURE_CUBE_MAP
+TEXTURE_2D_ARRAY
+}
+enum "Engine::Rendering::TextureWrapping" as C_0010363620148178811796
+enum C_0010363620148178811796 {
+CLAMP
+REPEAT
+}
+enum "Engine::Rendering::TextureFilter" as C_0003525605754001707130
+enum C_0003525605754001707130 {
+NEAREST
+LINEAR
+}
+class "Engine::Rendering::TextureParameters" as C_0001453495524692948524
+class C_0001453495524692948524 {
+__
++dataType : int
++filter : TextureFilter
++format : int
++height : int
++imageData : unsigned char *
++type : TextureType
++width : int
++wrapping : TextureWrapping
+}
+class "Engine::Rendering::ShaderParameters" as C_0005719490843958547504
+class C_0005719490843958547504 {
+__
++fragmentShader : const std::filesystem::path
++vertexShader : const std::filesystem::path
+}
+class "Engine::Rendering::MeshHandle" as C_0006118082789509841398
+class C_0006118082789509841398 {
+__
++handle : uint32_t
+}
+class "Engine::Rendering::TextureHandle" as C_0007030359361171487998
+class C_0007030359361171487998 {
+__
++handle : uint32_t
+}
+class "Engine::Rendering::ShaderHandle" as C_0016796369416382387538
+class C_0016796369416382387538 {
+__
++handle : uint32_t
+}
+class "Engine::Rendering::Texture" as C_0002241518764200002280
+class C_0002241518764200002280 {
+__
++params : TextureParameters
++tHandle : TextureHandle
+}
+class "Engine::Rendering::Material" as C_0012107896584944840788
+class C_0012107896584944840788 {
+__
++shaderHandle : uint32_t
++textureHandle : uint32_t
+}
+class "Engine::Rendering::Vertex" as C_0003528917884515404651
+class C_0003528917884515404651 {
+__
++normal : glm::vec3
++position : glm::vec3
++uv : glm::vec2
+}
+class "Engine::Rendering::MeshData" as C_0000029884656832645208
+class C_0000029884656832645208 {
+__
++indices : std::vector<uint32_t>
++vertices : std::vector<Vertex>
+}
+class "Engine::Rendering::Transform" as C_0018080581493981655007
+class C_0018080581493981655007 {
+__
++position : glm::vec3
++rotation : glm::vec3
++scale : glm::vec3
+}
+class "Engine::Rendering::Color" as C_0003146543332176112956
+class C_0003146543332176112956 {
+__
++rgba : glm::vec4
+}
+enum "Engine::Rendering::PrimitiveType" as C_0016634995672523198866
+enum C_0016634995672523198866 {
+LINES
+TRIANGLES
+}
+abstract "Engine::Rendering::IRenderBackend" as C_0014930216693717519272
+abstract C_0014930216693717519272 {
++~IRenderBackend() = default : void
+..
+{abstract} +Begin() = 0 : void
+{abstract} +CreateMesh(const MeshData & data) = 0 : MeshHandle
+{abstract} +CreateShader(const ShaderParameters & parameters) = 0 : ShaderHandle
+{abstract} +CreateTexture(const TextureParameters & parameters) = 0 : TextureHandle
+{abstract} +Draw(MeshHandle, Material, Transform) = 0 : void
+{abstract} +DrawDynamicBuffer(void * vertexData, int count, PrimitiveType type) = 0 : void
+{abstract} +End() = 0 : void
+{abstract} +SetViewProjection(const glm::mat4 & view, const glm::mat4 & proj) = 0 : void
+{abstract} +UpdateTexture(TextureHandle handle, const void * pixelData) = 0 : void
+__
+}
+class "Engine::Rendering::DrawCommand" as C_0007062862532344881460
+class C_0007062862532344881460 {
+__
++material : Material
++mesh : MeshHandle
++transform : Transform
+}
+class "Engine::Rendering::Renderer" as C_0008709012175416383034
+class C_0008709012175416383034 {
++Renderer(std::unique_ptr<IRenderBackend> render_backend) : void
+..
++Begin(const Camera & camera) : void
++CreateMesh(const MeshData & data) const : MeshHandle
++CreateShader(const ShaderParameters & parameters) const : ShaderHandle
++CreateTexture(const TextureParameters & parameters) const : TextureHandle
++DrawLine(glm::vec3 a, glm::vec3 b, Color color) const : void
++End() : void
+-Flush() : void
++Submit(MeshHandle mesh, Material material, Transform transform) : void
++SwitchBackend(std::unique_ptr<IRenderBackend> render_backend) : void
+__
+-m_DrawCommands : std::vector<DrawCommand>
+-m_RenderBackend : std::unique_ptr<IRenderBackend>
+}
+class "Engine::Rendering::OpenGLBackend" as C_0003176479576331291714
+class C_0003176479576331291714 {
++OpenGLBackend() = default : void
+..
++Begin() : void
++CreateMesh(const MeshData & data) : MeshHandle
++CreateShader(const ShaderParameters & parameters) : ShaderHandle
++CreateTexture(const TextureParameters & parameters) : TextureHandle
++Draw(MeshHandle, Material, Transform) : void
++DrawDynamicBuffer(void * vertexData, int count, PrimitiveType type) : void
++End() : void
++SetViewProjection(const glm::mat4 & view, const glm::mat4 & proj) : void
++UpdateTexture(TextureHandle handle, const void * pixelData) : void
+__
+-m_Meshes : std::vector<GPUMesh>
+-m_Proj : glm::mat4
+-m_Textures : std::vector<GPUTexture>
+-m_View : glm::mat4
+}
+class "Engine::Rendering::OpenGLBackend::GPUMesh" as C_0001409581089314370311
+class C_0001409581089314370311 {
+__
++ebo : GLuint
++indexCount : uint32_t
++vao : GLuint
++vbo : GLuint
+}
+class "Engine::Rendering::OpenGLBackend::GPUTexture" as C_0015874896612330852033
+class C_0015874896612330852033 {
+__
++format : GLenum
++height : int
++id : GLuint
++width : int
+}
+enum "Engine::Rendering::ShaderType" as C_0002605511711409615476
+enum C_0002605511711409615476 {
+VERTEX_SHADER
+FRAGMENT_SHADER
+GEOMETRY_SHADER
+}
+class "Engine::Rendering::Shader" as C_0015528236679527193724
+class C_0015528236679527193724 {
++bind() : void
+-compileShader(const std::string & src, ShaderType type) : unsigned int
++id() : unsigned int
+-linkShaderProgram(unsigned int vertexShader, unsigned int fragmentShader) : unsigned int
++load(const std::filesystem::path & vertexShader, const std::filesystem::path & fragmentShader) : bool
+-loadFromFile(const std::filesystem::path & path, ShaderType * typeOut, std::string * sourceOut) : void
+__
+-m_ShaderProgramID : unsigned int
+}
+class "Engine::Input" as C_0004854023634127342073
+class C_0004854023634127342073 {
++IsKeyDown(int key) const : bool
++handleKey(int key, int scancode, int action, int mods) : void
++handleResize(int width, int height) : void
+{static} +keyCallback(GLFWwindow * window, const int key, const int scancode, const int action, const int mods) : void
+{static} +resizeCallback(GLFWwindow * window, const int width, const int height) : void
+__
+-m_KeyState : std::unordered_map<int,bool>
+}
+class "Engine::ResourceManager" as C_0008927138634359313678
+class C_0008927138634359313678 {
+{static} +GetMesh(std::string alias) : Rendering::MeshData
+{static} +GetShader(std::string alias) : Rendering::ShaderHandle
+{static} +LoadMesh(std::filesystem::path meshFile, std::string alias) : Rendering::MeshData
+{static} +LoadShader(std::filesystem::path vertex, const std::filesystem::path & fragment, const std::string & alias) : Rendering::ShaderHandle
+__
+{static} -s_Meshes : std::unordered_map<std::string,Rendering::MeshData>
+{static} -s_Shaders : std::unordered_map<std::string,Rendering::Shader>
+}
+class "Engine::WindowProperties" as C_0009059241334153805290
+class C_0009059241334153805290 {
+__
++height : int
++hidden : bool
++title : std::string
++width : int
+}
+class "Engine::Window" as C_0015583390122797847347
+class C_0015583390122797847347 {
++Window(const WindowProperties & properties) : void
++~Window() : void
+..
++create() : void
++destroy() : void
++getFrameBufferSize() const : Vector2I
++getWindow() const : GLFWwindow *
++isHidden() const : bool
++setHidden(const bool hidden) : void
++setInputHandler(Input * input) const : void
++setKeyCallback(GLFWkeyfun callback) const : void
++setResizeCallback(GLFWframebuffersizefun callback) const : void
++shouldClose() const : bool
+__
+-m_Height : int
+-m_Hidden : bool
+-m_Title : std::string
+-m_Width : int
+-m_Window : GLFWwindow *
+}
+C_0003719779346828084050 o-- C_0002886508483453525476 : +projection
+C_0001453495524692948524 o-- C_0002502947422070324512 : +type
+C_0001453495524692948524 o-- C_0010363620148178811796 : +wrapping
+C_0001453495524692948524 o-- C_0003525605754001707130 : +filter
+C_0002241518764200002280 o-- C_0001453495524692948524 : +params
+C_0002241518764200002280 o-- C_0007030359361171487998 : +tHandle
+C_0000029884656832645208 o-- C_0003528917884515404651 : +vertices
+C_0014930216693717519272 ..> C_0006118082789509841398
+C_0014930216693717519272 ..> C_0012107896584944840788
+C_0014930216693717519272 ..> C_0018080581493981655007
+C_0014930216693717519272 ..> C_0016634995672523198866
+C_0014930216693717519272 ..> C_0007030359361171487998
+C_0014930216693717519272 ..> C_0000029884656832645208
+C_0014930216693717519272 ..> C_0001453495524692948524
+C_0014930216693717519272 ..> C_0005719490843958547504
+C_0014930216693717519272 ..> C_0016796369416382387538
+C_0007062862532344881460 o-- C_0006118082789509841398 : +mesh
+C_0007062862532344881460 o-- C_0012107896584944840788 : +material
+C_0007062862532344881460 o-- C_0018080581493981655007 : +transform
+C_0008709012175416383034 ..> C_0006118082789509841398
+C_0008709012175416383034 ..> C_0012107896584944840788
+C_0008709012175416383034 ..> C_0018080581493981655007
+C_0008709012175416383034 ..> C_0003146543332176112956
+C_0008709012175416383034 ..> C_0003719779346828084050
+C_0008709012175416383034 ..> C_0000029884656832645208
+C_0008709012175416383034 ..> C_0001453495524692948524
+C_0008709012175416383034 ..> C_0007030359361171487998
+C_0008709012175416383034 ..> C_0005719490843958547504
+C_0008709012175416383034 ..> C_0016796369416382387538
+C_0008709012175416383034 o-- C_0014930216693717519272 : -m_RenderBackend
+C_0008709012175416383034 o-- C_0007062862532344881460 : -m_DrawCommands
+C_0003176479576331291714 ..> C_0006118082789509841398
+C_0003176479576331291714 ..> C_0012107896584944840788
+C_0003176479576331291714 ..> C_0018080581493981655007
+C_0003176479576331291714 ..> C_0016634995672523198866
+C_0003176479576331291714 ..> C_0000029884656832645208
+C_0003176479576331291714 ..> C_0001453495524692948524
+C_0003176479576331291714 ..> C_0007030359361171487998
+C_0003176479576331291714 ..> C_0005719490843958547504
+C_0003176479576331291714 ..> C_0016796369416382387538
+C_0014930216693717519272 <|-- C_0003176479576331291714
+C_0001409581089314370311 --+ C_0003176479576331291714
+C_0015874896612330852033 --+ C_0003176479576331291714
+C_0015528236679527193724 ..> C_0002605511711409615476
+C_0008927138634359313678 ..> C_0016796369416382387538
+C_0008927138634359313678 --> C_0015528236679527193724 : -s_Shaders
+C_0008927138634359313678 --> C_0000029884656832645208 : -s_Meshes
+C_0015583390122797847347 ..> C_0009059241334153805290
+C_0015583390122797847347 ..> C_0004854023634127342073
+note top of C_0008709012175416383034: Core renderer
+
+'Generated with clang-uml, version 0.6.3
+'LLVM version clang version 22.1.8 (https://github.com/llvm/llvm-project.git ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)
+@enduml

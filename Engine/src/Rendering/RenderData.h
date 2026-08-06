@@ -13,6 +13,8 @@
 #include "glm/vec4.hpp"
 #include <glm/glm.hpp>
 
+#include <GL/glew.h>
+
 //hex codes from glew
 
 namespace Engine::Rendering {
@@ -57,12 +59,12 @@ namespace Engine::Rendering {
     };
 
     struct TextureParameters {
-        TextureType type;
-        TextureWrapping wrapping;
-        TextureFilter filter;
+        TextureType type = TEXTURE_2D;
+        TextureWrapping wrapping = CLAMP;
+        TextureFilter filter = NEAREST;
         int width, height;
-        int format;
-        int dataType;
+        int format = GL_RGBA;
+        int dataType = GL_UNSIGNED_BYTE;
 
         unsigned char* imageData;
     };

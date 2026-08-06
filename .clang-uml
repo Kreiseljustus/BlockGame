@@ -1,0 +1,13 @@
+compilation_database_dir: cmake-build-debug
+output_directory: diagrams
+diagrams:
+  engine_class:
+    type: class
+    glob:
+      - Engine/src/**/*.cpp
+    include:
+      namespaces:
+        - Engine
+    plantuml:
+      after:
+        - "note top of {{ alias(\"Engine::Rendering::Renderer\") }}: Core renderer"

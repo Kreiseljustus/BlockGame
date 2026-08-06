@@ -15,7 +15,7 @@ using namespace Engine::Rendering;
 
 void OpenGLBackend::Begin() {
     glClearColor(0.5,0.5,0.5,255);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_Meshes.reserve(100);
 }
@@ -53,10 +53,13 @@ void OpenGLBackend::Draw(MeshHandle mesh, Material material, Transform transform
     glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, &mvp[0][0]);
 
     //TODO: Add support for different texture types
-    if (material.textureHandle != 0) {
+    if (material.textureHandle != -1) {
         const GPUTexture& tex = m_Textures[material.textureHandle];
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(TEXTURE_2D, tex.id);
+
+        GLint texLoc = glGetUniformLocation(material.shaderHandle, "textureA");
+        glUniform1i(texLoc, 0);
     }
 
     glBindVertexArray(gpuMesh.vao);

@@ -2,11 +2,17 @@
 #version 330 core
 out vec4 FragColor;
 
-in vec3 Color;
 in vec2 oTex;
+in vec3 vNormals;
 
 uniform sampler2D textureA;
 
 void main() {
-    FragColor = texture(textureA, oTex) * vec4(Color, 1.0);
+    vec3 normal = normalize(vNormals);
+    vec3 lightDir = normalize(vec3(0.5, 1.0, 0.3));
+    float diffuse = max(dot(normal, lightDir), 0.0);
+    float ambient = 0.15;
+
+    vec3 texColor = texture(textureA, oTex).rgb;
+    FragColor = vec4(texColor * (ambient + diffuse), 1.0);
 }

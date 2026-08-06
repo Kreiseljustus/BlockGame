@@ -48,7 +48,12 @@ MeshData ResourceManager::LoadMesh(std::filesystem::path meshFile, std::string a
         Vertex v{};
         v.normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
         v.position = {mesh->mVertices[i].x,mesh->mVertices[i].y,mesh->mVertices[i].z};
-        v.uv = {0,0};
+
+        if (mesh->mTextureCoords[0]) {
+            v.uv = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+        } else {
+            v.uv = {0,0};
+        }
 
         data.vertices.push_back(v);
     }
