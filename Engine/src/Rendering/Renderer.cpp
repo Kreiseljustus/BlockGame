@@ -53,7 +53,7 @@ void Engine::Rendering::Renderer::End() {
 
 void Engine::Rendering::Renderer::Flush() {
     std::sort(m_DrawCommands.begin(), m_DrawCommands.end(), [](const DrawCommand& a, const DrawCommand& b) {
-        return a.material.shaderHandle < b.material.shaderHandle;
+        return a.material.shaderHandle.handle < b.material.shaderHandle.handle;
     });
 
     for (const auto& cmd : m_DrawCommands)

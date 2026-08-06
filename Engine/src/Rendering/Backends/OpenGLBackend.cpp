@@ -31,7 +31,7 @@ void OpenGLBackend::Draw(const MeshHandle mesh, const Material material, const T
     }
     const GPUMesh& gpuMesh = m_Meshes[mesh.handle];
 
-    glUseProgram(material.shaderHandle);
+    glUseProgram(material.shaderHandle.handle);
 
     //Position -> Rotation -> Scale
 
@@ -44,7 +44,7 @@ void OpenGLBackend::Draw(const MeshHandle mesh, const Material material, const T
 
     glm::mat4 mvp = m_Proj * m_View * model;
 
-    const GLint mvpLoc = glGetUniformLocation(material.shaderHandle, "transform");
+    const GLint mvpLoc = glGetUniformLocation(material.shaderHandle.handle, "transform");
 
     if (mvpLoc == -1) {
         std::cout << "Uniform not found!" << " transform" << std::endl;
@@ -53,12 +53,12 @@ void OpenGLBackend::Draw(const MeshHandle mesh, const Material material, const T
     glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, &mvp[0][0]);
 
     //TODO: Add support for different texture types
-    if (material.textureHandle != -1) {
-        const GPUTexture& tex = m_Textures[material.textureHandle];
+    if (material.textureHandle.handle != -1) {
+        const GPUTexture& tex = m_Textures[material.textureHandle.handle];
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(TEXTURE_2D, tex.id);
 
-        const GLint texLoc = glGetUniformLocation(material.shaderHandle, "textureA");
+        const GLint texLoc = glGetUniformLocation(material.shaderHandle.handle, "textureA");
         glUniform1i(texLoc, 0);
     }
 

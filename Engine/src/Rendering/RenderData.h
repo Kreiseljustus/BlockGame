@@ -92,8 +92,8 @@ namespace Engine::Rendering {
     };
 
     struct Material {
-        uint32_t shaderHandle;
-        uint32_t textureHandle;
+        ShaderHandle shaderHandle;
+        TextureHandle textureHandle;
         //Color and other stuff
     };
 

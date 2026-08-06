@@ -83,10 +83,10 @@ int main(int arc, char* argv[]) {
 
 		for (int i = 0; i < 100; i++) {
 			glm::vec3 pos = {i * 3,0,0.7};
-			//renderer.Submit(test_handle, {test_Shader_handle.handle, tHandle.handle}, {pos, {270,0,0}, {1,1,1}});
+			renderer.Submit(test_handle, {test_Shader_handle, tHandle}, {pos, {270,0,0}, {1,1,1}});
 		}
 		
-		renderer.Submit(quad, {test_Shader_handle.handle, tHandle.handle}, {{0,0,0.5}, {0,0,0}, {1,1,1}});
+		renderer.Submit(quad, {test_Shader_handle, tHandle}, {{0,0,0.5}, {0,0,0}, {1,1,1}});
 
 		renderer.End();
 
