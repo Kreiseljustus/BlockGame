@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 
 #include <Window.h>
@@ -13,10 +14,52 @@
 using namespace Engine::Rendering;
 using namespace Engine;
 
+struct Enemy {
+	Transform t;
+	float timeAlive;
+	bool alive = true;
+};
+
+bool CheckAABBCollision(const Transform& a, const Transform& b) {
+	float aHalfX = a.scale.x * 0.5f;
+	float aHalfY = a.scale.y * 0.5f;
+	float bHalfX = b.scale.x * 0.5f;
+	float bHalfY = b.scale.y * 0.5f;
+
+	bool overlapX = std::abs(a.position.x - b.position.x) < (aHalfX + bHalfX);
+	bool overlapY = std::abs(a.position.y - b.position.y) < (aHalfY + bHalfY);
+
+	return overlapX && overlapY;
+}
+
+struct Player {
+	Transform t;
+	float timeAlive;
+	bool alive = true;
+};
+
 int main(int arc, char* argv[]) {
 	if (!glfwInit()) {
 		std::cout << "Failed to initialize GLFW" << std::endl;
 	}
+
+	std::vector<Enemy> enemies;
+	const int maxTimeAlivePerEnemy = 10;
+	const float enemySpeed = 2.0f;
+
+	float baseSpawnTime = 3.0f;
+	float minSpawnTime = 0.15;
+	float decayRate = 0.10f;
+
+	float totalGameTime = 0.0f;
+	float currentWaveTime = 0.0f;
+
+	Player p;
+	p.t.position = {0, -2, 0.5};
+	p.t.rotation = {0,0,0};
+	p.t.scale = {.25,.25,.25};
+
+	float pSpeed = 2.0f;
 
 	volatile bool useOpenGL = true;
 
@@ -31,12 +74,8 @@ int main(int arc, char* argv[]) {
 
 	glEnable(GL_DEPTH_TEST);
 
-	std::cout << ResourceManager::LoadShader("assets/shaders/BasicVertexShader.glsl", "assets/shaders/BasicFragmentShader.glsl", "basic").handle;
-
-	std::cout << std::endl;
+	 ResourceManager::LoadShader("assets/shaders/BasicVertexShader.glsl", "assets/shaders/BasicFragmentShader.glsl", "basic");
 	ShaderHandle test_Shader_handle = ResourceManager::GetShader("basic");
-
-	MeshData test_data = ResourceManager::LoadMesh("assets/meshes/test.fbx", "monkey");
 
 	TextureParameters tParams;
 	int channels;
@@ -45,9 +84,6 @@ int main(int arc, char* argv[]) {
 	auto backend = useOpenGL ? std::make_unique<OpenGLBackend>() : nullptr;
 	Renderer renderer = Renderer(std::move(backend));
 
-	TextureHandle tHandle = renderer.CreateTexture(tParams);
-
-	MeshHandle test_handle = renderer.CreateMesh(test_data);
 	MeshHandle quad = renderer.CreateMesh(GetUnitQuad());
 
 	Input input;
@@ -63,35 +99,75 @@ int main(int arc, char* argv[]) {
 
 	double lastTime = glfwGetTime();
 
+	srand(time(nullptr));
+
 	while (!window.shouldClose()) {
 		double now = glfwGetTime();
-		float deltaTime = static_cast<float>(now - lastTime);
+		auto deltaTime = static_cast<float>(now - lastTime);
 		lastTime = now;
+		totalGameTime += deltaTime;
+
+		float spawnInterval = std::max(minSpawnTime, baseSpawnTime * std::exp(-decayRate * totalGameTime));
 
 		glfwPollEvents();
+
+		if (input.IsKeyDown(GLFW_KEY_A)) {
+			p.t.position.x -= deltaTime * pSpeed;
+		}
+		if (input.IsKeyDown(GLFW_KEY_D)) {
+			p.t.position.x += deltaTime * pSpeed;
+		}
+		if (input.IsKeyDown(GLFW_KEY_W)) p.t.position.y += deltaTime * pSpeed;
+		if (input.IsKeyDown(GLFW_KEY_S)) p.t.position.y -= deltaTime * pSpeed;
+
 		camera.aspect = static_cast<float>(window.getFrameBufferSize().x) / static_cast<float>(window.getFrameBufferSize().y);
 
-		const float speed = 2.0f;
-		if (input.IsKeyDown(GLFW_KEY_W)) camera.position.z -= speed * deltaTime;
-		if (input.IsKeyDown(GLFW_KEY_S)) camera.position.y -= speed * deltaTime;
-		if (input.IsKeyDown(GLFW_KEY_A)) camera.position.x -= speed * deltaTime;
-		if (input.IsKeyDown(GLFW_KEY_D)) camera.position.x += speed * deltaTime;
-		if (input.IsKeyDown(GLFW_KEY_LEFT)) camera.rotation.y += 10 * deltaTime;
-		if (input.IsKeyDown(GLFW_KEY_RIGHT)) camera.rotation.y -= 10 *deltaTime;
+		currentWaveTime += deltaTime;
+
+		if (currentWaveTime >= spawnInterval) {
+			currentWaveTime = 0;
+			Enemy e;
+			int range = 5;
+			float x = ((rand() / static_cast<float>(RAND_MAX)) * 2.0f - 1.0f) * range;
+			e.t.position = {x, 5, 0.5f};
+			e.t.rotation = {0,0,0};
+			e.t.scale = {1,1,1};
+			e.alive = true;
+			e.timeAlive = 0;
+			enemies.push_back(e);
+		}
+
+		for (int e = 0; e < enemies.size(); e++) {
+			enemies[e].timeAlive += deltaTime;
+			if (enemies[e].timeAlive >= maxTimeAlivePerEnemy) {
+				enemies.at(e).alive = false;
+			}
+			enemies.at(e).t.position.y -= enemySpeed * deltaTime;
+			if (CheckAABBCollision(enemies.at(e).t, p.t)) {
+				glfwSetWindowShouldClose(window.getWindow(), true);
+			}
+		}
+
+		enemies.erase(
+	std::remove_if(enemies.begin(), enemies.end(), [](const Enemy& e) { return !e.alive; }),
+	enemies.end()
+		);
 
 		renderer.Begin(camera);
-
-		for (int i = 0; i < 100; i++) {
-			glm::vec3 pos = {i * 3,0,0.7};
-			renderer.Submit(test_handle, {test_Shader_handle, tHandle}, {pos, {270,0,0}, {1,1,1}});
+		for (Enemy& e : enemies) {
+			if (e.alive) {
+				renderer.Submit(quad, {test_Shader_handle, {0}}, e.t);
+			}
 		}
-		
-		renderer.Submit(quad, {test_Shader_handle, tHandle}, {{0,0,0.5}, {0,0,0}, {1,1,1}});
 
+		renderer.Submit(quad, {test_Shader_handle, {0}}, p.t);
 		renderer.End();
 
 		glfwSwapBuffers(window.getWindow());
 	}
+
+	std::cout << "GAME OVER!" << std::endl;
+	std::cout << "Score: " << p.timeAlive << std::endl;
 
 	glfwTerminate();
 
