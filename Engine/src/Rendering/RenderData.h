@@ -25,7 +25,7 @@ namespace Engine::Rendering {
     };
 
     struct Camera {
-        glm::vec3 position;
+        glm::vec3 position = {0,0,0};
         glm::vec3 rotation = {0,0,0};
 
         ProjectionType projection = ProjectionType::Orthographic;
@@ -62,45 +62,45 @@ namespace Engine::Rendering {
         TextureType type = TEXTURE_2D;
         TextureWrapping wrapping = CLAMP;
         TextureFilter filter = NEAREST;
-        int width, height;
+        int width = 0, height = 0;
         int format = GL_RGBA;
         int dataType = GL_UNSIGNED_BYTE;
 
-        unsigned char* imageData;
+        unsigned char* imageData = nullptr;
     };
 
     struct ShaderParameters {
-        const std::filesystem::path vertexShader;
-        const std::filesystem::path fragmentShader;
+        const std::filesystem::path vertexShader = "vertexShader.glsl";
+        const std::filesystem::path fragmentShader = "fragmentShader.glsl";
     };
 
     struct MeshHandle {
-        uint32_t handle;
+        uint32_t handle = 0;
     };
 
     struct TextureHandle {
-        uint32_t handle;
+        uint32_t handle = 0;
     };
 
     struct ShaderHandle {
-        uint32_t handle;
+        uint32_t handle = 0;
     };
 
     struct Texture {
-        TextureParameters params;
-        TextureHandle tHandle;
+        TextureParameters params = {};
+        TextureHandle tHandle = {0};
     };
 
     struct Material {
-        ShaderHandle shaderHandle;
-        TextureHandle textureHandle;
+        ShaderHandle shaderHandle = {0};
+        TextureHandle textureHandle = {0};
         //Color and other stuff
     };
 
     struct Vertex {
-        glm::vec3 position;
-        glm::vec3 normal;
-        glm::vec2 uv;
+        glm::vec3 position {0,0,0};
+        glm::vec3 normal {1,1,1};
+        glm::vec2 uv {0,0};
     };
 
     struct MeshData {
@@ -109,13 +109,13 @@ namespace Engine::Rendering {
     };
 
     struct Transform {
-        glm::vec3 position;
-        glm::vec3 rotation;
-        glm::vec3 scale;
+        glm::vec3 position = {0,0,0};
+        glm::vec3 rotation = {0,0,0};
+        glm::vec3 scale = {1,1,1};
     };
 
     struct Color {
-        glm::vec4 rgba;
+        glm::vec4 rgba = {255,255,255,255};
     };
 
     enum PrimitiveType {
