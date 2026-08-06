@@ -57,6 +57,8 @@ void OpenGLBackend::Draw(const MeshHandle mesh, const Material material, const T
 
     glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, &mvp[0][0]);
 
+    glBindTexture(GL_TEXTURE_2D, 0);
+
     //TODO: Add support for different texture types
     if (material.textureHandle.handle != 0) {
         const GPUTexture& tex = m_Textures[material.textureHandle.handle];
