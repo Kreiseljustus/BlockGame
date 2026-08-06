@@ -34,6 +34,8 @@ namespace Engine::Rendering {
         [[nodiscard]] MeshHandle CreateMesh(const MeshData& data) const {return m_RenderBackend->CreateMesh(data);}
         [[nodiscard]] TextureHandle CreateTexture(const TextureParameters& parameters) const {return m_RenderBackend->CreateTexture(parameters);}
         [[nodiscard]] ShaderHandle CreateShader(const ShaderParameters& parameters) const {return m_RenderBackend->CreateShader(parameters);}
+
+        void UpdateTexture(const TextureHandle handle, const void* pixelData) const {m_RenderBackend->UpdateTexture(handle, pixelData);}
     private:
         void Flush();
     private:
