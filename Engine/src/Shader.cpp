@@ -13,7 +13,13 @@
 
 using namespace Engine::Rendering;
 
-void Shader::bind() {
+Shader::~Shader() {
+    if (m_ShaderProgramID) {
+        glDeleteProgram(m_ShaderProgramID);
+    }
+}
+
+void Shader::bind() const {
     if (m_ShaderProgramID != 0) {
         glUseProgram(m_ShaderProgramID);
     } else {
@@ -93,7 +99,7 @@ unsigned int Shader::compileShader(const std::string& src, const ShaderType type
     glGetShaderiv(id, GL_COMPILE_STATUS, &success);
 
     if (!success) {
-        glGetShaderInfoLog(id, 512, NULL, infoLog);
+        glGetShaderInfoLog(id, 512, nullptr, infoLog);
         std::cout << "Shader compilation failed! " << std::endl << infoLog << std::endl;
         return 0;
     }
@@ -101,7 +107,7 @@ unsigned int Shader::compileShader(const std::string& src, const ShaderType type
     return id;
 }
 
-unsigned int Shader::linkShaderProgram(unsigned int vertexShader, unsigned int fragmentShader) {
+unsigned int Shader::linkShaderProgram(const unsigned int vertexShader, const unsigned int fragmentShader) {
     const unsigned int id = glCreateProgram();
     glAttachShader(id, vertexShader);
     glAttachShader(id, fragmentShader);
@@ -112,7 +118,7 @@ unsigned int Shader::linkShaderProgram(unsigned int vertexShader, unsigned int f
     glGetProgramiv(id, GL_LINK_STATUS, &success);
 
     if (!success) {
-        glGetProgramInfoLog(id, 512, NULL, infoLog);
+        glGetProgramInfoLog(id, 512, nullptr, infoLog);
         std::cout << "Shader linking failed! " << std::endl << infoLog << std::endl;
         return 0;
     }
