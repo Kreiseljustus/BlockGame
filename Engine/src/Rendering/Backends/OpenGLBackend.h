@@ -5,6 +5,8 @@
 #ifndef BLOCKGAME_OPENGLBACKEND_H
 #define BLOCKGAME_OPENGLBACKEND_H
 
+#include <unordered_set>
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
@@ -51,6 +53,8 @@ namespace Engine::Rendering {
 
         glm::mat4 m_View = glm::mat4(1.0f);
         glm::mat4 m_Proj = glm::mat4(1.0f);
+
+        std::unordered_set<GLuint> m_ShadersUpdatedCurrentFrame;
     };
 }
 

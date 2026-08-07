@@ -7,10 +7,12 @@ layout (location = 2) in vec2 tex;
 out vec2 oTex;
 out vec3 vNormals;
 
-uniform mat4 transform;
+uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 model;
 
 void main() {
-    gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    gl_Position = projection * view * model * vec4(aPos.x, aPos.y, aPos.z, 1.0);
     oTex = tex;
-    vNormals = aNormal;
+    vNormals = mat3(model) * aNormal;
 }

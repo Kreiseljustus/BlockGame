@@ -6,6 +6,7 @@
 
 #include <iostream>
 
+#include "../../../../cmake-build-debug-vs/_deps/glm-src/glm/gtc/type_ptr.inl"
 #include "GL/glew.h"
 #include "glm/fwd.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
@@ -14,7 +15,11 @@
 using namespace Engine::Rendering;
 
 OpenGLBackend::OpenGLBackend() {
-    glEnable(GL_DEPTH);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+
+    glFrontFace(GL_CCW);
+
     m_Textures.push_back({0});
 }
 
@@ -23,6 +28,8 @@ void OpenGLBackend::Begin() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_Meshes.reserve(100);
+
+    m_ShadersUpdatedCurrentFrame.clear();
 }
 
 void OpenGLBackend::End() {
@@ -38,6 +45,16 @@ void OpenGLBackend::Draw(const MeshHandle mesh, const Material material, const T
 
     glUseProgram(material.shaderHandle.handle);
 
+    uint32_t shaderHandle = material.shaderHandle.handle;
+
+    if (m_ShadersUpdatedCurrentFrame.find(material.shaderHandle.handle) == std::end(m_ShadersUpdatedCurrentFrame)) {
+        GLint viewLoc = glGetUniformLocation(shaderHandle, "view");
+        GLint projLoc = glGetUniformLocation(shaderHandle, "projection");
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(m_View));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(m_Proj));
+        m_ShadersUpdatedCurrentFrame.insert(shaderHandle);
+    }
+
     //Position -> Rotation -> Scale
 
     glm::mat4 model = glm::translate(glm::mat4(1.0f), transform.position);
@@ -47,15 +64,13 @@ void OpenGLBackend::Draw(const MeshHandle mesh, const Material material, const T
 
     model = glm::scale(model, transform.scale);
 
-    glm::mat4 mvp = m_Proj * m_View * model;
+    const GLint modelLoc = glGetUniformLocation(material.shaderHandle.handle, "model");
 
-    const GLint mvpLoc = glGetUniformLocation(material.shaderHandle.handle, "transform");
-
-    if (mvpLoc == -1) {
-        std::cout << "Uniform not found!" << " transform" << std::endl;
+    if (modelLoc == -1) {
+        std::cout << "Uniform not found!" << " model" << std::endl;
     }
 
-    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, &mvp[0][0]);
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -158,5 +173,7 @@ void OpenGLBackend::UpdateTexture(const TextureHandle handle, const void *pixelD
 void OpenGLBackend::SetViewProjection(const glm::mat4 &view, const glm::mat4 &proj) {
     m_View = view;
     m_Proj = proj;
+
+    //TODO: SHADER UPLOAD STUFF
 }
 
