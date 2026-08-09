@@ -11,8 +11,27 @@
 
 #include <Rendering/PrimitiveProvider.h>
 
+#include "minecraft/ChunkManager.h"
+#include "utils/PerlinNoise.hpp"
+
 using namespace Engine::Rendering;
 using namespace Engine;
+
+#include "minecraft/Chunk.h"
+
+std::vector<Transform> fillUp(Transform t) {
+	constexpr int worldBottom= -64;
+
+	std::vector<Transform> fill;
+
+	for (int y = worldBottom; y < t.position.y; ++y) {
+		Transform currPos = t;
+		currPos.position.y = y;
+		fill.push_back(currPos);
+	}
+
+	return fill;
+}
 
 int main(int arc, char* argv[]) {
 	if (!glfwInit()) {
@@ -35,7 +54,7 @@ int main(int arc, char* argv[]) {
 
 	TextureParameters tParams;
 	int channels;
-	tParams.imageData = stbi_load("assets/textures/test2.jpg", &tParams.width, &tParams.height, &channels, 4);
+	tParams.imageData = stbi_load("assets/textures/dirt.png", &tParams.width, &tParams.height, &channels, 4);
 
 	auto backend = useOpenGL ? std::make_unique<OpenGLBackend>() : nullptr;
 	Renderer renderer = Renderer(std::move(backend));
@@ -62,6 +81,11 @@ int main(int arc, char* argv[]) {
 
 	double lastTime = glfwGetTime();
 
+	const siv::PerlinNoise::seed_type seed = 12345;
+	const siv::PerlinNoise perlin{seed};
+
+	ChunkManager chunkManager;
+
 	while (!window.shouldClose()) {
 		double now = glfwGetTime();
 		auto deltaTime = static_cast<float>(now - lastTime);
@@ -75,7 +99,9 @@ int main(int arc, char* argv[]) {
 		camera.aspect = static_cast<float>(window.getFrameBufferSize().x) / static_cast<float>(window.getFrameBufferSize().y);
 
 		const float lookSensitivity = 0.15f;
-		const float camSpeed = 3.0f;
+		float camSpeed = 6.0f;
+
+		if (input.IsKeyDown(GLFW_KEY_LEFT_SHIFT)) camSpeed *= 2;
 
 		if (input.IsMouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT)) {
 			glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -104,16 +130,15 @@ int main(int arc, char* argv[]) {
 			input.ConsumeMouseDelta();
 		}
 
+		if (input.IsKeyDown(GLFW_KEY_F11)) {
+			glfwSetWindowSize(window.getWindow(), 1920, 1080);
+		}
+
+		chunkManager.Update(camera.position, renderer, perlin);
+
 		renderer.Begin(camera);
 
-		Transform ab = {{0,0,-5}, {0,0,0}, {1,1,1}};
-		for (int x = 0; x < 100; x ++) {
-			for (int z = 0; z < 100; z++) {
-				ab.position.x = x;
-				ab.position.z = z;
-				renderer.Submit(cube, {test_Shader_handle, tHandle}, ab);
-			}
-		}
+		chunkManager.Render(renderer, test_Shader_handle, tHandle);
 
 		renderer.End();
 
