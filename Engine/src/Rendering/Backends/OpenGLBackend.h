@@ -30,6 +30,9 @@ namespace Engine::Rendering {
         ShaderHandle CreateShader(const ShaderParameters& parameters) override;
 
         void UpdateTexture(TextureHandle handle, const void* pixelData) override;
+        void UpdateMesh(MeshHandle handle, const MeshData &data) override;
+
+        void DestroyMesh(MeshHandle handle) override;
 
         void SetViewProjection(const glm::mat4& view, const glm::mat4& proj) override;
 
@@ -39,6 +42,8 @@ namespace Engine::Rendering {
             GLuint vbo = 0;
             GLuint ebo = 0;
             uint32_t indexCount = 0;
+            uint32_t generation = 0;
+            bool alive = false;
         };
 
         struct GPUTexture {
@@ -49,6 +54,8 @@ namespace Engine::Rendering {
         };
 
         std::vector<GPUMesh> m_Meshes;
+        std::vector<uint32_t> m_FreeMeshSlots;
+
         std::vector<GPUTexture> m_Textures;
 
         glm::mat4 m_View = glm::mat4(1.0f);

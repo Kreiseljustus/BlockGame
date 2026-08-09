@@ -36,6 +36,10 @@ namespace Engine::Rendering {
         [[nodiscard]] ShaderHandle CreateShader(const ShaderParameters& parameters) const {return m_RenderBackend->CreateShader(parameters);}
 
         void UpdateTexture(const TextureHandle handle, const void* pixelData) const {m_RenderBackend->UpdateTexture(handle, pixelData);}
+        void UpdateMesh(MeshHandle handle, const MeshData& data) const {m_RenderBackend->UpdateMesh(handle, data);}
+
+        void DestroyMesh(MeshHandle handle) const {m_RenderBackend->DestroyMesh(handle);}
+
     private:
         void Flush();
     private:

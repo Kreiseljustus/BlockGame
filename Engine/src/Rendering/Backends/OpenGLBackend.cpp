@@ -37,11 +37,11 @@ void OpenGLBackend::End() {
 }
 
 void OpenGLBackend::Draw(const MeshHandle mesh, const Material material, const Transform transform) {
-    if (mesh.handle > m_Meshes.size() || mesh.handle < 0) {
-        std::cout << "Invalid mesh handle: " << mesh.handle << std::endl;
+    if (mesh.index >= m_Meshes.size() || !m_Meshes[mesh.index].alive || m_Meshes[mesh.index].generation != mesh.generation) {
+        std::cout << "Invalid or stale mesh handle" << std::endl;
         return;
     }
-    const GPUMesh& gpuMesh = m_Meshes[mesh.handle];
+    const GPUMesh& gpuMesh = m_Meshes[mesh.index];
 
     glUseProgram(material.shaderHandle.handle);
 
@@ -122,10 +122,21 @@ MeshHandle OpenGLBackend::CreateMesh(const MeshData &data) {
     glBindVertexArray(0);
 
     mesh.indexCount = static_cast<uint32_t>(data.indices.size());
+    mesh.alive = true;
 
-    m_Meshes.push_back(mesh);
+    uint32_t index;
+    if (!m_FreeMeshSlots.empty()) {
+        index = m_FreeMeshSlots.back();
+        m_FreeMeshSlots.pop_back();
+        mesh.generation = m_Meshes[index].generation + 1;
+        m_Meshes[index] = mesh;
+    } else {
+        index = static_cast<uint32_t>(m_Meshes.size());
+        mesh.generation = 0;
+        m_Meshes.push_back(mesh);
+    }
 
-    return {static_cast<uint32_t>(m_Meshes.size() - 1)};
+    return {index, mesh.generation};
 }
 
 TextureHandle OpenGLBackend::CreateTexture(const TextureParameters& parameters) {
@@ -168,6 +179,48 @@ void OpenGLBackend::UpdateTexture(const TextureHandle handle, const void *pixelD
 
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex.width, tex.height, tex.format, GL_UNSIGNED_BYTE, pixelData);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void OpenGLBackend::UpdateMesh(MeshHandle handle, const MeshData &data) {
+    if (handle.index >= m_Meshes.size() || !m_Meshes[handle.index].alive) {
+        std::cerr << "Invalid mesh handle in UpdateMesh: " << handle.index << std::endl;
+        return;
+    }
+    if (m_Meshes[handle.index].generation != handle.generation) {
+        std::cerr << "Stale mesh handle in UpdateMesh: " << handle.index << std::endl;
+        return;
+    }
+
+    GPUMesh& mesh = m_Meshes[handle.index];
+
+    glBindVertexArray(mesh.vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+    glBufferData(GL_ARRAY_BUFFER, data.vertices.size() * sizeof(uint32_t), data.vertices.data(), GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.indices.size() * sizeof(uint32_t), data.indices.data(), GL_DYNAMIC_DRAW);
+
+    glBindVertexArray(0);
+
+    mesh.indexCount = static_cast<uint32_t>(data.indices.size());
+}
+
+void OpenGLBackend::DestroyMesh(MeshHandle handle) {
+    if (handle.index >= m_Meshes.size() || !m_Meshes[handle.index].alive) {
+        std::cerr << "Mesh handle already deleted!" << std::endl;
+    }
+    if (m_Meshes[handle.index].generation != handle.generation) {
+        std::cerr << "Stale mesh handle!" << std::endl;
+    }
+
+    GPUMesh& mesh = m_Meshes[handle.index];
+    glDeleteVertexArrays(1, &mesh.vao);
+    glDeleteBuffers(1, &mesh.vao);
+    glDeleteBuffers(1, &mesh.ebo);
+    mesh.alive = false;
+
+    m_FreeMeshSlots.push_back(handle.index);
 }
 
 void OpenGLBackend::SetViewProjection(const glm::mat4 &view, const glm::mat4 &proj) {
