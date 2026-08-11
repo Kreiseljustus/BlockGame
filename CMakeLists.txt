@@ -21,8 +21,6 @@ endforeach()
 include(FetchContent)
 set(FETCHCONTENT_QUIET OFF)
 
-
-
 # Some fetched dependencies (e.g. glew-cmake) ship a CMakeLists.txt with an
 # outdated `cmake_minimum_required`, which newer CMake versions reject outright.
 # This tells CMake to apply policies as if that old minimum were valid instead
@@ -103,12 +101,70 @@ set(ASSIMP_BUILD_GLTF_IMPORTER ON CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_OBJ_IMPORTER ON CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_FBX_IMPORTER ON CACHE BOOL "" FORCE)
 
-FetchContent_MakeAvailable(glfw glew glm stb lua sol2 assimp)
+# --- Dear ImGui (immediate-mode GUI, for editor tooling / debug UI / inventory-style panels) ---
+# ImGui ships NO CMakeLists.txt of its own -- it's designed to be dropped into
+# whatever build system you're using, with you picking which backends you need.
+# We build it as our own INTERFACE-less static target below, after fetching.
+FetchContent_Declare(
+        imgui
+        GIT_REPOSITORY https://github.com/ocornut/imgui.git
+        GIT_TAG        v1.91.6
+)
+
+# --- Jolt Physics (rigid body physics + collision) ---
+# Jolt's CMakeLists.txt lives in a "Build" subdirectory of the repo, not the
+# root -- SOURCE_SUBDIR tells FetchContent where to actually find it.
+FetchContent_Declare(
+        JoltPhysics
+        GIT_REPOSITORY https://github.com/jrouwe/JoltPhysics.git
+        GIT_TAG        v5.2.0
+        SOURCE_SUBDIR  "Build"
+)
+set(TARGET_UNIT_TESTS OFF CACHE BOOL "" FORCE)
+set(TARGET_HELLO_WORLD OFF CACHE BOOL "" FORCE)
+set(TARGET_PERFORMANCE_TEST OFF CACHE BOOL "" FORCE)
+set(TARGET_SAMPLES OFF CACHE BOOL "" FORCE)
+set(TARGET_VIEWER OFF CACHE BOOL "" FORCE)
+
+# --- miniaudio (audio playback -- header-only single file) ---
+FetchContent_Declare(
+        miniaudio
+        GIT_REPOSITORY https://github.com/mackron/miniaudio.git
+        GIT_TAG        0.11.21
+)
+
+FetchContent_MakeAvailable(glfw glew glm stb lua sol2 assimp imgui JoltPhysics miniaudio)
 
 # stb is header-only with no CMakeLists.txt of its own; expose it as an
 # interface target so we can link against it like any other dependency.
 add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE ${stb_SOURCE_DIR})
+
+# miniaudio is header-only (single miniaudio.h with an implementation switch);
+# same INTERFACE-target pattern as stb. The actual MINIAUDIO_IMPLEMENTATION
+# define + #include happens in exactly one .cpp file inside Engine (see
+# Engine/CMakeLists.txt / the audio backend source) -- never define it here.
+add_library(miniaudio INTERFACE)
+target_include_directories(miniaudio INTERFACE ${miniaudio_SOURCE_DIR})
+
+# Dear ImGui has no build system of its own -- we build it as a static lib
+# here, with the GLFW + OpenGL3 backends (matching our window/graphics stack).
+add_library(imgui STATIC
+        ${imgui_SOURCE_DIR}/imgui.cpp
+        ${imgui_SOURCE_DIR}/imgui_draw.cpp
+        ${imgui_SOURCE_DIR}/imgui_tables.cpp
+        ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+        ${imgui_SOURCE_DIR}/imgui_demo.cpp
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+)
+target_include_directories(imgui PUBLIC
+        ${imgui_SOURCE_DIR}
+        ${imgui_SOURCE_DIR}/backends
+)
+# ImGui's GLFW backend needs GLFW's own headers, and its OpenGL3 backend
+# needs a GL loader -- both already satisfied by linking these.
+target_link_libraries(imgui PUBLIC glfw libglew_static)
 
 # ---------------------------------------------------------------------------
 # Subprojects

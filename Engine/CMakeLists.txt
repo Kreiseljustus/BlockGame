@@ -1,9 +1,9 @@
 # ---------------------------------------------------------------------------
 # Engine -- static library. Everything (glfw, glew, glm, assimp, lua, sol2,
-# OpenGL) is linked PUBLIC, so any target that links against Engine alone
-# transitively gets every dependency, every include path, and every compile
-# definition it needs. Nothing outside this file should ever need to know
-# these dependencies exist.
+# imgui, Jolt, miniaudio, OpenGL) is linked PUBLIC, so any target that links
+# against Engine alone transitively gets every dependency, every include
+# path, and every compile definition it needs. Nothing outside this file
+# should ever need to know these dependencies exist.
 # ---------------------------------------------------------------------------
 file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
@@ -32,6 +32,9 @@ target_link_libraries(Engine PUBLIC
         lua::lua
         sol2::sol2
         assimp::assimp
+        imgui
+        Jolt
+        miniaudio
 )
 
 if(WIN32)
