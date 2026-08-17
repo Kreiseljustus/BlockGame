@@ -11,6 +11,7 @@
 
 #include <Rendering/PrimitiveProvider.h>
 
+#include "Core/Application.h"
 #include "minecraft/ChunkManager.h"
 #include "utils/PerlinNoise.hpp"
 
@@ -34,6 +35,11 @@ std::vector<Transform> fillUp(Transform t) {
 }
 
 int main(int arc, char* argv[]) {
+
+	Core::Application app = Core::Application(Core::ApplicationSpecification());
+	app.Run();
+
+	/*
 	if (!glfwInit()) {
 		std::cout << "Failed to initialize GLFW" << std::endl;
 	}
@@ -145,7 +151,7 @@ int main(int arc, char* argv[]) {
 		glfwSwapBuffers(window.getWindow());
 	}
 
-	glfwTerminate();
+	glfwTerminate();*/
 
 	return 0;
 }
