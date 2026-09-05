@@ -12,6 +12,7 @@
 #include "Window.h"
 
 #include "Core/Layer.h"
+#include "Event.h"
 #include "ImGui/ImGuiLayer.h"
 
 namespace Engine::Core {
@@ -29,7 +30,7 @@ namespace Engine::Core {
         void PushLayer(Layer* layer);
 
         //Soon™
-        void OnEvent();
+        void OnEvent(Event& event);
 
         [[nodiscard]] Window& GetWindow() const;
 

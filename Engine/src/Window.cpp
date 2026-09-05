@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+#include "Events/WindowEvent.h"
+#include "Events/KeyEvent.h"
+
 using namespace Engine;
 
 void Window::create() {
@@ -24,6 +27,30 @@ void Window::create() {
 
     glfwMakeContextCurrent(m_Window);
     std::cout << "Context current window: " << glfwGetCurrentContext() << std::endl;
+    glfwSetWindowUserPointer(m_Window, this);
+
+    glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* w, int width, int height) {
+        auto* self = static_cast<Window*>(glfwGetWindowUserPointer(w));
+        Events::WindowResizeEvent event(width,height);
+        self->m_EventCallback(event);
+    });
+
+    glfwSetKeyCallback(m_Window, [](GLFWwindow* w, int key, int scancode, int action, int mods) {
+        auto* self = static_cast<Window*>(glfwGetWindowUserPointer(w));
+        if (action == GLFW_PRESS) {
+            Events::KeyPressedEvent event(key);
+            self->m_EventCallback(event);
+        } else if (action == GLFW_RELEASE) {
+            Events::KeyReleasedEvent event(key);
+            self->m_EventCallback(event);
+        }
+    });
+
+    glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* w) {
+        auto* self = static_cast<Window*>(glfwGetWindowUserPointer(w));
+        Events::WindowCloseEvent event{};
+        self->m_EventCallback(event);
+    });
 
     if (m_CreateOpenGLContext) {
         glewExperimental = GL_TRUE;
@@ -41,7 +68,7 @@ void Window::destroy() {
         m_Window = nullptr;
     }
 }
-
+#if 0
 void Window::setInputHandler(Input* input) const{
     glfwSetWindowUserPointer(m_Window, input);
 }
@@ -53,6 +80,7 @@ void Window::setKeyCallback(const GLFWkeyfun callback) const {
 void Window::setResizeCallback(const GLFWframebuffersizefun callback) const {
     glfwSetFramebufferSizeCallback(m_Window, callback);
 }
+#endif
 
 Vector2I Window::getFrameBufferSize() const {
     Vector2I size;

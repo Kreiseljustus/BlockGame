@@ -35,8 +35,8 @@ void Engine::ImGuiLayer::OnDetach() {
     ImGui::DestroyContext();
 }
 
-void Engine::ImGuiLayer::OnEvent() {
-    Layer::OnEvent();
+void Engine::ImGuiLayer::OnEvent(Core::Event& event) {
+    Layer::OnEvent(event);
 }
 
 void Engine::ImGuiLayer::Begin() {

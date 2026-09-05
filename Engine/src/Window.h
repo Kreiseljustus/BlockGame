@@ -4,11 +4,15 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <string>
+#include <functional>
 
 #include "Input.h"
+#include "Core/Event.h"
 #include "math/Vector2.h"
 
 namespace Engine {
+    using EventCallbackFun = std::function<void(Core::Event&)>;
+
     struct WindowProperties {
         int Width = 600, Height = 600;
         std::string Title = "New Window";
@@ -26,9 +30,7 @@ namespace Engine {
         void create();
         void destroy();
 
-        void setInputHandler(Input* input) const;
-        void setKeyCallback(GLFWkeyfun callback) const;
-        void setResizeCallback(GLFWframebuffersizefun callback) const;
+        void SetEventCallback(const EventCallbackFun& callback) {m_EventCallback = callback;}
 
         [[nodiscard]] Vector2I getFrameBufferSize() const;
 
@@ -44,6 +46,8 @@ namespace Engine {
         int m_Width, m_Height;
         bool m_Hidden;
         bool m_CreateOpenGLContext;
+
+        EventCallbackFun m_EventCallback;
     };
 }
 

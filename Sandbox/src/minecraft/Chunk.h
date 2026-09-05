@@ -55,7 +55,7 @@ public:
 public:
     bool hasMesh = false;
 private:
-    Engine::Rendering::MeshHandle mesh;
+    Engine::Rendering::MeshHandle mesh {};
     ChunkCoord cord = {0,0};
 
     std::vector<BlockType> m_Blocks;

@@ -5,7 +5,7 @@
 #ifndef BLOCKGAME_LAYER_H
 #define BLOCKGAME_LAYER_H
 
-#include <string>
+#include <Core/Event.h>
 
 namespace Engine::Core {
     class Layer {
@@ -18,7 +18,7 @@ namespace Engine::Core {
         virtual void OnUpdate(float deltaTime) {}
         virtual void OnImGuiRender() {}
         //Soon
-        virtual void OnEvent() {}
+        virtual void OnEvent(Event& event) {}
     };
 }
 

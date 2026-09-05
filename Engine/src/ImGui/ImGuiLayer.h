@@ -14,7 +14,7 @@ namespace Engine {
 
         void OnAttach() override;
         void OnDetach() override;
-        void OnEvent() override;
+        void OnEvent(Core::Event& event) override;
 
         void Begin();
         void End();

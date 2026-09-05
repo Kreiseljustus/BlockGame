@@ -36,10 +36,10 @@ std::vector<Transform> fillUp(Transform t) {
 
 int main(int arc, char* argv[]) {
 
-	Core::Application app = Core::Application(Core::ApplicationSpecification());
-	app.Run();
+	//Core::Application app = Core::Application(Core::ApplicationSpecification());
+	//app.Run();
 
-	/*
+
 	if (!glfwInit()) {
 		std::cout << "Failed to initialize GLFW" << std::endl;
 	}
@@ -70,9 +70,9 @@ int main(int arc, char* argv[]) {
 	MeshHandle cube = renderer.CreateMesh(GetUnitCube());
 
 	Input input;
-	window.setInputHandler(&input);
+	/*window.setInputHandler(&input);
 	window.setKeyCallback(Input::keyCallback);
-	window.setResizeCallback(Input::resizeCallback);
+	window.setResizeCallback(Input::resizeCallback);*/
 	//TODO: Make window methods
 	glfwSetMouseButtonCallback(window.getWindow(), Input::mouseButtonCallback);
 	glfwSetCursorPosCallback(window.getWindow(), Input::cursorPosCallback);
@@ -151,7 +151,7 @@ int main(int arc, char* argv[]) {
 		glfwSwapBuffers(window.getWindow());
 	}
 
-	glfwTerminate();*/
+	glfwTerminate();
 
 	return 0;
 }
