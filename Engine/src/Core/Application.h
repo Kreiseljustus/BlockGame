@@ -14,7 +14,6 @@
 
 #include "Core/Layer.h"
 #include "Event.h"
-#include "ImGui/ImGuiLayer.h"
 
 namespace Engine::Core {
 
@@ -44,7 +43,6 @@ namespace Engine::Core {
         ApplicationSpecification m_Specs;
         std::unique_ptr<Window> m_Window;
         std::vector<Layer*> m_LayerStack;
-        ImGuiLayer* m_ImGuiLayer;
 
         Input input;
 

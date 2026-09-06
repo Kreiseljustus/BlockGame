@@ -84,7 +84,7 @@ BlockType Chunk::GetBlockAt(const int x, const int y, const int z) const {
 
 void Chunk::SetBlockAt(const int x, const int y, const int z, const BlockType type) {
     if (x < 0 || x >= CHUNK_SIZE_XZ || y < 0 || y >= CHUNK_SIZE_Y || z < 0 || z >= CHUNK_SIZE_XZ) {
-        std::cout << "SetBlockAt out of bounds: " << x << "," << y << "," << z << std::endl;
+        //std::cout << "SetBlockAt out of bounds: " << x << "," << y << "," << z << std::endl;
         return;
     }
     m_Blocks[Get3DTO1DBlockIndex(x, y, z)] = type;
