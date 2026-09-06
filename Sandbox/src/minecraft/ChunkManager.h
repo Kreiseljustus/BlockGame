@@ -18,7 +18,7 @@ private:
     static ChunkCoord WorldToChunkCoord(const glm::vec3& worldPos);
 private:
     std::unordered_map<ChunkCoord, Chunk, ChunkCoordHash> m_Chunks;
-    int m_RenderDistance = 2;
+    int m_RenderDistance = 20;
 };
 
 

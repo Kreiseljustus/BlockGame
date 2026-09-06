@@ -102,6 +102,12 @@ void BlockGame::OnUpdate(const float deltaTime) {
     renderer.End();
 }
 
-void BlockGame::OnEvent(Engine::Core::Event &event) {
-    Layer::OnEvent(event);
+void BlockGame::OnEvent(Engine::Core::Event& event) {
+    EventDispatcher dispatcher(event);
+    dispatcher.Dispatch<Events::WindowResizeEvent>([this](Events::WindowResizeEvent& resize){return OnResize(resize);});
+}
+
+bool BlockGame::OnResize(Events::WindowResizeEvent &e) {
+    camera.aspect = static_cast<float>(window->getFrameBufferSize().x) / static_cast<float>(window->getFrameBufferSize().y);
+    return true;
 }

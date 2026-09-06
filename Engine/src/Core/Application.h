@@ -14,6 +14,7 @@
 
 #include "Core/Layer.h"
 #include "Event.h"
+#include "Events/WindowEvent.h"
 
 namespace Engine::Core {
 
@@ -34,6 +35,7 @@ namespace Engine::Core {
         Window* GetWindow() {return m_Window.get();}
 
         [[nodiscard]] Window& GetWindow() const;
+        bool OnWindowResize(Events::WindowResizeEvent& e);
 
         void Close();
 

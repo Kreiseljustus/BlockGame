@@ -48,7 +48,7 @@ void Application::OnEvent(Event& event) {
     input.OnEvent(event);
 
     EventDispatcher dispatcher(event);
-    //dispatcher.Dispatch<Events::WindowResizeEvent>([this](Events::WindowResizeEvent& resize) {return OnWindowResize();});
+    dispatcher.Dispatch<Events::WindowResizeEvent>([this](Events::WindowResizeEvent& resize) {return OnWindowResize(resize);});
     dispatcher.Dispatch<Events::WindowCloseEvent>([this](Events::WindowCloseEvent&) {Close(); return true;});
 
     for (auto it= m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
@@ -59,6 +59,18 @@ void Application::OnEvent(Event& event) {
 
 Engine::Window & Application::GetWindow() const {
     return *m_Window;
+}
+
+bool Application::OnWindowResize(Events::WindowResizeEvent &e) {
+
+    if (e.Width == 0 || e.Height == 0) {
+        m_Minimized = true;
+        return false;
+    } else {
+        m_Minimized = false;
+        glViewport(0,0, e.Width, e.Height);
+    }
+    return true;
 }
 
 void Application::Run() {

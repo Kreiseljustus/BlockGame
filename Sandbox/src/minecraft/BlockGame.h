@@ -9,6 +9,7 @@
 
 #include "ChunkManager.h"
 #include "Window.h"
+#include "Events/WindowEvent.h"
 #include "Rendering/RenderData.h"
 #include "Rendering/Renderer.h"
 
@@ -27,6 +28,8 @@ public:
     void OnDetach() override;
     void OnUpdate(float deltaTime) override;
     void OnEvent(Event &event) override;
+
+    bool OnResize(Events::WindowResizeEvent& e);
 
 private:
     Renderer renderer;
