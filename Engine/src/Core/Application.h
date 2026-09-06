@@ -5,6 +5,7 @@
 #ifndef BLOCKGAME_APPLICATION_H
 #define BLOCKGAME_APPLICATION_H
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <memory>
@@ -29,8 +30,9 @@ namespace Engine::Core {
 
         void PushLayer(Layer* layer);
 
-        //Soon™
         void OnEvent(Event& event);
+        Input* GetInput() {return &input;}
+        Window* GetWindow() {return m_Window.get();}
 
         [[nodiscard]] Window& GetWindow() const;
 
@@ -43,6 +45,8 @@ namespace Engine::Core {
         std::unique_ptr<Window> m_Window;
         std::vector<Layer*> m_LayerStack;
         ImGuiLayer* m_ImGuiLayer;
+
+        Input input;
 
         bool m_Running = true;
         bool m_Minimized = false;

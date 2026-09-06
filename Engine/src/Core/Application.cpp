@@ -24,9 +24,8 @@ Application::Application(const ApplicationSpecification& specs) : m_Specs(specs)
     }
 
     m_Window = std::make_unique<Window>(WindowProperties{.Title = m_Specs.Name});
-    m_Window->create();
-
     m_Window->SetEventCallback([this](Event& e) {OnEvent(e);});
+    m_Window->create();
 
     m_ImGuiLayer = new ImGuiLayer();
     PushLayer(m_ImGuiLayer);
@@ -46,6 +45,8 @@ void Application::Close() {
 }
 
 void Application::OnEvent(Event& event) {
+    input.OnEvent(event);
+
     EventDispatcher dispatcher(event);
     //dispatcher.Dispatch<Events::WindowResizeEvent>([this](Events::WindowResizeEvent& resize) {return OnWindowResize();});
     dispatcher.Dispatch<Events::WindowCloseEvent>([this](Events::WindowCloseEvent&) {Close(); return true;});

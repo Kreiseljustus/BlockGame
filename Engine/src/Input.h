@@ -4,62 +4,42 @@
 
 #ifndef BLOCKGAME_INPUT_H
 #define BLOCKGAME_INPUT_H
-#include <iostream>
+
+
 #include <unordered_map>
-
-#include "GLFW/glfw3.h"
-
 #include <glm/glm.hpp>
+
+#include "Core/Event.h"
+#include "Events/KeyEvent.h"
+#include "Events/MouseEvent.h"
 
 namespace Engine {
     class Input {
     public:
-        void handleKey(int key, int scancode, int action, int mods);
-        void handleMouseButton(int button, int action, int mods);
-        void handleCursorPos(double x, double y);
-
-        static void handleResize(int width, int height);
+        void OnEvent(Core::Event& event);
 
         bool IsKeyDown(const int key) const {
             const auto it = m_KeyState.find(key);
             return it != m_KeyState.end() && it->second;
         }
 
-        bool IsMouseButtonDown(int button) const {
-            auto it = m_MouseButtonState.find(button);
+        bool IsMouseButtonDown(const int button) const {
+            const auto it = m_MouseButtonState.find(button);
             return it != m_MouseButtonState.end() && it->second;
         }
 
         glm::vec2 ConsumeMouseDelta() {
-            glm::vec2 delta = m_MouseDelta;
+            const glm::vec2 delta = m_MouseDelta;
             m_MouseDelta = {0,0};
             return delta;
         }
 
-        static void keyCallback(GLFWwindow* window, const int key, const int scancode, const int action, const int mods) {
-            auto* self = static_cast<Input*>(glfwGetWindowUserPointer(window));
-            if (!self) { std::cout << "No input setup for window " << window << std::endl; return; }
-            self->handleKey(key, scancode, action, mods);
-        }
-
-        static void resizeCallback(GLFWwindow* window, const int width, const int height) {
-            auto* self = static_cast<Input*>(glfwGetWindowUserPointer(window));
-            if (!self) { std::cout << "No input setup for window " << window << std::endl; return; }
-            handleResize(width, height);
-        }
-
-        static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-            auto* self = static_cast<Input*>(glfwGetWindowUserPointer(window));
-            if (!self) return;
-            self->handleMouseButton(button,action,mods);
-        }
-
-        static void cursorPosCallback(GLFWwindow* window, double x, double y) {
-            auto* self = static_cast<Input*>(glfwGetWindowUserPointer(window));
-            if (!self) return;
-            self->handleCursorPos(x, y);
-        }
-
+    private:
+        void OnKeyPressed(const Events::KeyPressedEvent& e);
+        void OnKeyReleased(const Events::KeyReleasedEvent& e);
+        void OnMouseButtonPressed(const Events::MouseButtonPressedEvent& e);
+        void OnMouseButtonReleased(const Events::MouseButtonReleasedEvent& e);
+        void OnMouseMoved(const Events::MouseMovedEvent& e);
     private:
         std::unordered_map<int, bool> m_KeyState;
         std::unordered_map<int,bool> m_MouseButtonState;

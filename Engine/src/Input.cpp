@@ -6,25 +6,22 @@
 
 using namespace Engine;
 
-void Input::handleKey(const int key, int scancode, const int action, int mods) {
-    if (action == GLFW_PRESS) {
-        m_KeyState[key] = true;
-    } else if (action == GLFW_RELEASE) {
-        m_KeyState[key] = false;
-    }
+void Input::OnEvent(Core::Event& event) {
+    Core::EventDispatcher dispatcher(event);
+    dispatcher.Dispatch<Events::KeyPressedEvent>([this](auto& e) { OnKeyPressed(e); return false; });
+    dispatcher.Dispatch<Events::KeyReleasedEvent>([this](auto& e) { OnKeyReleased(e); return false; });
+    dispatcher.Dispatch<Events::MouseButtonPressedEvent>([this](auto& e) { OnMouseButtonPressed(e); return false; });
+    dispatcher.Dispatch<Events::MouseButtonReleasedEvent>([this](auto& e) { OnMouseButtonReleased(e); return false; });
+    dispatcher.Dispatch<Events::MouseMovedEvent>([this](auto& e) { OnMouseMoved(e); return false; });
 }
 
-void Input::handleResize(const int width, const int height) {
-    glViewport(0,0, width, height);
-}
+void Input::OnKeyPressed(const Events::KeyPressedEvent& e) { m_KeyState[e.Key] = true; }
+void Input::OnKeyReleased(const Events::KeyReleasedEvent& e) { m_KeyState[e.Key] = false; }
+void Input::OnMouseButtonPressed(const Events::MouseButtonPressedEvent& e) { m_MouseButtonState[e.Button] = true; }
+void Input::OnMouseButtonReleased(const Events::MouseButtonReleasedEvent& e) { m_MouseButtonState[e.Button] = false; }
 
-void Input::handleMouseButton(int button, int action, int mods) {
-    if (action == GLFW_PRESS) m_MouseButtonState[button] = true;
-    else if (action == GLFW_RELEASE) m_MouseButtonState[button] = false;
-}
-
-void Input::handleCursorPos(double x, double y) {
-    glm::vec2 pos = {static_cast<float>(x), static_cast<float>(y)};
+void Input::OnMouseMoved(const Events::MouseMovedEvent &e) {
+    const glm::vec2 pos = {static_cast<float>(e.X), static_cast<float>(e.Y)};
     if (m_FirstMouseSample) {
         m_LastMousePos = pos;
         m_FirstMouseSample = false;

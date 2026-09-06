@@ -23,7 +23,7 @@ void Engine::ImGuiLayer::OnAttach() {
     ImGui::StyleColorsDark();
 
     Core::Application& app = Core::Application::Get();
-    GLFWwindow* window = app.GetWindow().getWindow();
+    GLFWwindow* window = app.GetWindow()->getWindow();
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
@@ -48,7 +48,7 @@ void Engine::ImGuiLayer::Begin() {
 void Engine::ImGuiLayer::End() {
     ImGuiIO& io = ImGui::GetIO();
     Core::Application& app = Core::Application::Get();
-    io.DisplaySize = ImVec2(static_cast<float>(app.GetWindow().getFrameBufferSize().x), static_cast<float>(app.GetWindow().getFrameBufferSize().y));
+    io.DisplaySize = ImVec2(static_cast<float>(app.GetWindow()->getFrameBufferSize().x), static_cast<float>(app.GetWindow()->getFrameBufferSize().y));
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
