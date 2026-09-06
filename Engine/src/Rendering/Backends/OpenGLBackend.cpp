@@ -6,10 +6,9 @@
 
 #include <iostream>
 
-#include "../../../../cmake-build-debug-vs/_deps/glm-src/glm/gtc/type_ptr.inl"
+#include <glm/gtc/type_ptr.hpp>
 #include "GL/glew.h"
 #include "glm/fwd.hpp"
-#include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 
 using namespace Engine::Rendering;
@@ -27,8 +26,6 @@ void OpenGLBackend::Begin() {
     glClearColor(0.5,0.5,0.5,255);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_Meshes.reserve(100);
-
     m_ShadersUpdatedCurrentFrame.clear();
 }
 
@@ -37,11 +34,11 @@ void OpenGLBackend::End() {
 }
 
 void OpenGLBackend::Draw(const MeshHandle mesh, const Material material, const Transform transform) {
-    if (mesh.index >= m_Meshes.size() || !m_Meshes[mesh.index].alive || m_Meshes[mesh.index].generation != mesh.generation) {
+    if (mesh.backendID >= m_Meshes.size() || !m_Meshes[mesh.backendID].alive || m_Meshes[mesh.backendID].generation != mesh.generation) {
         std::cout << "Invalid or stale mesh handle" << std::endl;
         return;
     }
-    const GPUMesh& gpuMesh = m_Meshes[mesh.index];
+    const GPUMesh& gpuMesh = m_Meshes[mesh.backendID];
 
     glUseProgram(material.shaderHandle.handle);
 
@@ -76,12 +73,16 @@ void OpenGLBackend::Draw(const MeshHandle mesh, const Material material, const T
 
     //TODO: Add support for different texture types
     if (material.textureHandle.handle != 0) {
-        const GPUTexture& tex = m_Textures[material.textureHandle.handle];
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(TEXTURE_2D, tex.id);
+        if (material.textureHandle.handle >= m_Textures.size()) {
+            std::cout << "Invalid texture handle: " << material.textureHandle.handle << std::endl;
+        } else {
+            const GPUTexture& tex = m_Textures[material.textureHandle.handle];
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(TEXTURE_2D, tex.id);
 
-        const GLint texLoc = glGetUniformLocation(material.shaderHandle.handle, "textureA");
-        glUniform1i(texLoc, 0);
+            const GLint texLoc = glGetUniformLocation(material.shaderHandle.handle, "textureA");
+            glUniform1i(texLoc, 0);
+        }
     }
 
     glBindVertexArray(gpuMesh.vao);
@@ -182,21 +183,21 @@ void OpenGLBackend::UpdateTexture(const TextureHandle handle, const void *pixelD
 }
 
 void OpenGLBackend::UpdateMesh(MeshHandle handle, const MeshData &data) {
-    if (handle.index >= m_Meshes.size() || !m_Meshes[handle.index].alive) {
-        std::cerr << "Invalid mesh handle in UpdateMesh: " << handle.index << std::endl;
+    if (handle.backendID >= m_Meshes.size() || !m_Meshes[handle.backendID].alive) {
+        std::cerr << "Invalid mesh handle in UpdateMesh: " << handle.backendID << std::endl;
         return;
     }
-    if (m_Meshes[handle.index].generation != handle.generation) {
-        std::cerr << "Stale mesh handle in UpdateMesh: " << handle.index << std::endl;
+    if (m_Meshes[handle.backendID].generation != handle.generation) {
+        std::cerr << "Stale mesh handle in UpdateMesh: " << handle.backendID << std::endl;
         return;
     }
 
-    GPUMesh& mesh = m_Meshes[handle.index];
+    GPUMesh& mesh = m_Meshes[handle.backendID];
 
     glBindVertexArray(mesh.vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBufferData(GL_ARRAY_BUFFER, data.vertices.size() * sizeof(uint32_t), data.vertices.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, data.vertices.size() * sizeof(Vertex), data.vertices.data(), GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.indices.size() * sizeof(uint32_t), data.indices.data(), GL_DYNAMIC_DRAW);
@@ -207,20 +208,22 @@ void OpenGLBackend::UpdateMesh(MeshHandle handle, const MeshData &data) {
 }
 
 void OpenGLBackend::DestroyMesh(MeshHandle handle) {
-    if (handle.index >= m_Meshes.size() || !m_Meshes[handle.index].alive) {
+    if (handle.backendID >= m_Meshes.size() || !m_Meshes[handle.backendID].alive) {
         std::cerr << "Mesh handle already deleted!" << std::endl;
+        return;
     }
-    if (m_Meshes[handle.index].generation != handle.generation) {
+    if (m_Meshes[handle.backendID].generation != handle.generation) {
         std::cerr << "Stale mesh handle!" << std::endl;
+        return;
     }
 
-    GPUMesh& mesh = m_Meshes[handle.index];
+    GPUMesh& mesh = m_Meshes[handle.backendID];
     glDeleteVertexArrays(1, &mesh.vao);
-    glDeleteBuffers(1, &mesh.vao);
+    glDeleteBuffers(1, &mesh.vbo);
     glDeleteBuffers(1, &mesh.ebo);
     mesh.alive = false;
 
-    m_FreeMeshSlots.push_back(handle.index);
+    m_FreeMeshSlots.push_back(handle.backendID);
 }
 
 void OpenGLBackend::SetViewProjection(const glm::mat4 &view, const glm::mat4 &proj) {

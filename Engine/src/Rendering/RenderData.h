@@ -75,7 +75,7 @@ namespace Engine::Rendering {
     };
 
     struct MeshHandle {
-        uint32_t index = 0;
+        uint32_t backendID = 0;
         uint32_t generation = 0;
     };
 

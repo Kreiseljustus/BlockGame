@@ -5,6 +5,7 @@
 #include "Renderer.h"
 
 #include <algorithm>
+#include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -46,18 +47,22 @@ void Engine::Rendering::Renderer::Begin(const Camera& camera) {
     m_RenderBackend->Begin();
 }
 
-void Engine::Rendering::Renderer::End() {
+void Renderer::End() {
     Flush();
     m_RenderBackend->End();
 }
 
-void Engine::Rendering::Renderer::Flush() {
+void Renderer::Flush() {
     std::sort(m_DrawCommands.begin(), m_DrawCommands.end(), [](const DrawCommand& a, const DrawCommand& b) {
         return a.material.shaderHandle.handle < b.material.shaderHandle.handle;
     });
 
-    for (const auto& cmd : m_DrawCommands)
+    for (const auto& cmd : m_DrawCommands) {
+        if (!m_RenderBackend) {
+            std::cout << "Renderbackend invalid!" << std::endl;
+        }
         m_RenderBackend->Draw(cmd.mesh, cmd.material, cmd.transform);
+    }
 
     m_DrawCommands.clear();
 }
