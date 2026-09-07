@@ -25,8 +25,7 @@ std::vector<Transform> fillUp(Transform t) {
     return fill;
 }
 
-BlockGame::BlockGame() : renderer(std::make_unique<Rendering::OpenGLBackend>()) {
-    window = Core::Application::Get().GetWindow();
+BlockGame::BlockGame() : renderer(std::make_unique<Rendering::OpenGLBackend>()), window(Application::Get().GetWindow()) {
     input = Application::Get().GetInput();
 }
 
@@ -43,7 +42,7 @@ void BlockGame::OnAttach() {
     camera.projection = ProjectionType::Perspective;
     camera.position = {0,0,5};
     camera.orthoSize = 3.0f;
-    camera.aspect = static_cast<float>(window->getFrameBufferSize().x) / static_cast<float>(window->getFrameBufferSize().y);
+    camera.aspect = static_cast<float>(window.getFrameBufferSize().x) / static_cast<float>(window.getFrameBufferSize().y);
 
     glfwSwapInterval(0);
 }
@@ -55,10 +54,10 @@ void BlockGame::OnDetach() {
 void BlockGame::OnUpdate(const float deltaTime) {
     std::string title = "Block Game ";
     title.append(std::to_string(1.0f/deltaTime));
-    glfwSetWindowTitle(window->getWindow(), title.c_str());
+    glfwSetWindowTitle(window.getWindow(), title.c_str());
 
 
-    camera.aspect = static_cast<float>(window->getFrameBufferSize().x) / static_cast<float>(window->getFrameBufferSize().y);
+    camera.aspect = static_cast<float>(window.getFrameBufferSize().x) / static_cast<float>(window.getFrameBufferSize().y);
 
     const float lookSensitivity = 0.15f;
     float camSpeed = 6.0f;
@@ -66,7 +65,7 @@ void BlockGame::OnUpdate(const float deltaTime) {
     if (input->IsKeyDown(GLFW_KEY_LEFT_SHIFT)) camSpeed *= 2;
 
     if (input->IsMouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT)) {
-        glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         glm::vec2 mouseDelta = input->ConsumeMouseDelta();
         camera.rotation.y -= mouseDelta.x * lookSensitivity; // yaw
@@ -88,7 +87,7 @@ void BlockGame::OnUpdate(const float deltaTime) {
         if (input->IsKeyDown(GLFW_KEY_A)) camera.position -= right * camSpeed * deltaTime;
         if (input->IsKeyDown(GLFW_KEY_D)) camera.position += right * camSpeed * deltaTime;
     } else {
-        glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         input->ConsumeMouseDelta();
     }
 
@@ -102,12 +101,12 @@ void BlockGame::OnUpdate(const float deltaTime) {
     renderer.End();
 }
 
-void BlockGame::OnEvent(Engine::Core::Event& event) {
+void BlockGame::OnEvent(Event& event) {
     EventDispatcher dispatcher(event);
     dispatcher.Dispatch<Events::WindowResizeEvent>([this](Events::WindowResizeEvent& resize){return OnResize(resize);});
 }
 
-bool BlockGame::OnResize(Events::WindowResizeEvent &e) {
-    camera.aspect = static_cast<float>(window->getFrameBufferSize().x) / static_cast<float>(window->getFrameBufferSize().y);
+bool BlockGame::OnResize(Events::WindowResizeEvent& e) {
+    camera.aspect = static_cast<float>(window.getFrameBufferSize().x) / static_cast<float>(window.getFrameBufferSize().y);
     return true;
 }

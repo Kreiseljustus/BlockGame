@@ -9,6 +9,7 @@
 
 #include "ChunkManager.h"
 #include "Window.h"
+#include "Core/Application.h"
 #include "Events/WindowEvent.h"
 #include "Rendering/RenderData.h"
 #include "Rendering/Renderer.h"
@@ -29,12 +30,12 @@ public:
     void OnUpdate(float deltaTime) override;
     void OnEvent(Event &event) override;
 
-    bool OnResize(Events::WindowResizeEvent& e);
+    bool OnResize([[maybe_unused]] Events::WindowResizeEvent& e);
 
 private:
     Renderer renderer;
     Camera camera;
-    Window* window;
+    Window window;
 
     TextureHandle tHandle;
     ShaderHandle test_Shader_handle;

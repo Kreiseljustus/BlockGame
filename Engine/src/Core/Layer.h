@@ -15,10 +15,10 @@ namespace Engine::Core {
 
         virtual void OnAttach() {}
         virtual void OnDetach() {}
-        virtual void OnUpdate(float deltaTime) {}
+        virtual void OnUpdate([[maybe_unused]] float deltaTime) {}
         virtual void OnImGuiRender() {}
         //Soon
-        virtual void OnEvent(Event& event) {}
+        virtual void OnEvent([[maybe_unused]] Event& event) {}
     };
 }
 

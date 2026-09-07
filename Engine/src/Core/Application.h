@@ -15,6 +15,7 @@
 #include "Core/Layer.h"
 #include "Event.h"
 #include "Events/WindowEvent.h"
+#include "ImGui/ImGuiLayer.h"
 
 namespace Engine::Core {
 
@@ -32,7 +33,6 @@ namespace Engine::Core {
 
         void OnEvent(Event& event);
         Input* GetInput() {return &input;}
-        Window* GetWindow() {return m_Window.get();}
 
         [[nodiscard]] Window& GetWindow() const;
         bool OnWindowResize(Events::WindowResizeEvent& e);
@@ -45,6 +45,7 @@ namespace Engine::Core {
         ApplicationSpecification m_Specs;
         std::unique_ptr<Window> m_Window;
         std::vector<Layer*> m_LayerStack;
+        ImGuiLayer m_ImGuiLayer;
 
         Input input;
 

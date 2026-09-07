@@ -91,7 +91,11 @@ void OpenGLBackend::Draw(const MeshHandle mesh, const Material material, const T
 }
 
 void OpenGLBackend::DrawDynamicBuffer(void *vertexData, int count, PrimitiveType type) {
+    auto t = type;
+    auto d = vertexData;
+    auto c = count;
 
+    std::cout << c << d << t << std::endl;
 }
 
 MeshHandle OpenGLBackend::CreateMesh(const MeshData &data) {
@@ -164,6 +168,7 @@ TextureHandle OpenGLBackend::CreateTexture(const TextureParameters& parameters) 
 }
 
 ShaderHandle OpenGLBackend::CreateShader(const ShaderParameters &parameters) {
+    auto a = parameters;
     return {0};
 }
 

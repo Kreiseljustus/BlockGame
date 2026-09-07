@@ -12,6 +12,10 @@ file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
 
 add_library(Engine STATIC ${ENGINE_SOURCES})
 
+target_compile_options(Engine PRIVATE
+        -Wall -Wextra -Wuninitialized -Wmaybe-uninitialized
+)
+
 target_include_directories(Engine PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )

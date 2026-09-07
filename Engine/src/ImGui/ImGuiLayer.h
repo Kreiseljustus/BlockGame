@@ -4,20 +4,20 @@
 
 #ifndef BLOCKGAME_IMGUILAYER_H
 #define BLOCKGAME_IMGUILAYER_H
-#include "Core/Layer.h"
+//#include "Core/Layer.h"
 
 namespace Engine {
-    class ImGuiLayer : public Core::Layer{
+    class ImGuiLayer {
     public:
-        ImGuiLayer();
+        /*ImGuiLayer();
         ~ImGuiLayer() override = default;
 
         void OnAttach() override;
         void OnDetach() override;
         void OnEvent(Core::Event& event) override;
 
-        void Begin();
-        void End();
+        static void Begin();
+        static void End();*/
     };
 }
 

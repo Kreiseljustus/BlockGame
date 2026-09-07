@@ -36,6 +36,7 @@ void Engine::Rendering::Renderer::Submit(const MeshHandle mesh, const Material m
 
 void Engine::Rendering::Renderer::DrawLine(glm::vec3 a, glm::vec3 b, Color color) const {
     m_RenderBackend->DrawDynamicBuffer(nullptr, 0, TRIANGLES);
+    std::cout << a.x << b.x << color.rgba.x << std::endl;
 }
 
 void Engine::Rendering::Renderer::Begin(const Camera& camera) {
