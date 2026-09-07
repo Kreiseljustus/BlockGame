@@ -166,10 +166,6 @@ target_include_directories(imgui PUBLIC
 # needs a GL loader -- both already satisfied by linking these.
 target_link_libraries(imgui PUBLIC glfw libglew_static)
 
-target_compile_options(BlockGame PRIVATE
-        -Wall -Wextra -Wuninitialized -Wmaybe-uninitialized
-)
-
 # ---------------------------------------------------------------------------
 # Subprojects
 # ---------------------------------------------------------------------------
