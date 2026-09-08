@@ -14,7 +14,56 @@
 constexpr int CHUNK_SIZE_XZ = 16;
 constexpr int CHUNK_SIZE_Y = 64;
 
-enum class BlockType : uint8_t {Air, Stone, Dirt, Grass};
+constexpr int ATLAS_TILES_PER_ROW = 4;
+constexpr float ATLAS_TILE_SIZE = 1.0f / ATLAS_TILES_PER_ROW;
+
+enum class BlockType : uint8_t {Air, Stone, Dirt, Grass, Log, Leave, GrassPlant};
+
+inline glm::ivec2 GetAtlasTile(const BlockType type) {
+    switch (type) {
+        case BlockType::Dirt: {
+            return {1,0};
+            break;
+        }
+        case BlockType::Stone: {
+            return {2,0};
+            break;
+        }
+        case BlockType::Grass: {
+            return {3,0};
+            break;
+        }
+        case BlockType::Log: {
+            return {0,1};
+            break;
+        }
+        case BlockType::Leave: {
+            return {1,1};
+            break;
+        }
+        case BlockType::GrassPlant: {
+            return {2,1};
+            break;
+        }
+        default: {
+            return {0,0};
+            break;
+        }
+    }
+}
+
+inline void GetTileUVs(BlockType type, glm::vec2 outUVs[4]) {
+    const glm::ivec2 tile = GetAtlasTile(type);
+    float u0 = tile.x * ATLAS_TILE_SIZE;
+    float v0 = tile.y * ATLAS_TILE_SIZE;
+    float u1 = u0 + ATLAS_TILE_SIZE;
+    float v1 = v0 + ATLAS_TILE_SIZE;
+
+    outUVs[0] = {u0,v0};
+    outUVs[1] = {u1,v0};
+    outUVs[2] = {u1,v1};
+    outUVs[3] = {u0,v1};
+}
 
 struct ChunkCoord {
     int x, z;
@@ -72,20 +121,30 @@ inline void GenerateTerrainForChunk(Chunk& chunk, const siv::PerlinNoise& perlin
 
             const int height = static_cast<int>(perlin.octave2D_01(worldX * 0.01f, worldZ * 0.01f, 4) * (CHUNK_SIZE_Y - 1));
 
-            for (int y = 0; y <= height; y++) {
-                chunk.SetBlockAt(x, y, z, BlockType::Dirt);
+            for (int y = 0; y <= height - 5; y++) {
+                chunk.SetBlockAt(x, y, z, BlockType::Stone);
             }
 
+            for (int y = height - 5; y <= height - 1; y++) {
+                chunk.SetBlockAt(x,y,z, BlockType::Dirt);
+            }
 
-            uint32_t h = Hash2D(worldX, worldZ, 842492);
-            bool spawnTree = (h % 100) < 1;
+            chunk.SetBlockAt(x,height, z, BlockType::Grass);
+
+            /* const uint32_t grassChance = Hash2D(worldX, worldZ, 438239);
+            const bool spawnGrass = (grassChance % 100) < 3;
+            if (spawnGrass) chunk.SetBlockAt(x, height + 1, z, BlockType::GrassPlant);*/
+
+
+            const uint32_t h = Hash2D(worldX, worldZ, 842492);
+            const bool spawnTree = (h % 100) < 1;
             if (spawnTree) {
-                chunk.SetBlockAt(x, height + 1, z, BlockType::Dirt);
-                chunk.SetBlockAt(x, height + 2, z, BlockType::Dirt);
-                chunk.SetBlockAt(x, height + 3, z, BlockType::Dirt);
+                chunk.SetBlockAt(x, height + 1, z, BlockType::Log);
+                chunk.SetBlockAt(x, height + 2, z, BlockType::Log);
+                chunk.SetBlockAt(x, height + 3, z, BlockType::Log);
 
-                CreateBlockPlane(x,z, 5, 5, height + 4, BlockType::Dirt, chunk);
-                CreateBlockPlane(x,z, 3,3,height+5, BlockType::Dirt, chunk);
+                CreateBlockPlane(x,z, 5, 5, height + 4, BlockType::Leave, chunk);
+                CreateBlockPlane(x,z, 3,3,height+5, BlockType::Leave, chunk);
             }
         }
     }

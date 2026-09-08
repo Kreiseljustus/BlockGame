@@ -8,6 +8,7 @@
 
 #include "ResourceManager.h"
 #include "Core/Application.h"
+#include "Rendering/PrimitiveProvider.h"
 #include "Rendering/Backends/OpenGLBackend.h"
 
 
@@ -31,11 +32,15 @@ BlockGame::BlockGame() : renderer(std::make_unique<Rendering::OpenGLBackend>()),
 
 void BlockGame::OnAttach() {
     ResourceManager::LoadShader("assets/shaders/BasicVertexShader.glsl", "assets/shaders/BasicFragmentShader.glsl", "basic");
+
+    ResourceManager::LoadShader("assets/shaders/sky_vs.glsl", "assets/shaders/sky_fs.glsl", "sky");
+
     test_Shader_handle = ResourceManager::GetShader("basic");
+    sky_Shader_handle = ResourceManager::GetShader("sky");
 
     Rendering::TextureParameters tParams;
     int channels;
-    tParams.imageData = stbi_load("assets/textures/dirt.png", &tParams.width, &tParams.height, &channels, 4);
+    tParams.imageData = stbi_load("assets/textures/block_atlas.png", &tParams.width, &tParams.height, &channels, 4);
 
     tHandle = renderer.CreateTexture(tParams);
 
@@ -43,6 +48,8 @@ void BlockGame::OnAttach() {
     camera.position = {0,0,5};
     camera.orthoSize = 3.0f;
     camera.aspect = static_cast<float>(window.getFrameBufferSize().x) / static_cast<float>(window.getFrameBufferSize().y);
+
+    skyMesh = renderer.CreateMesh(GetUnitCube());
 
     glfwSwapInterval(0);
 }
@@ -60,9 +67,9 @@ void BlockGame::OnUpdate(const float deltaTime) {
     camera.aspect = static_cast<float>(window.getFrameBufferSize().x) / static_cast<float>(window.getFrameBufferSize().y);
 
     const float lookSensitivity = 0.15f;
-    float camSpeed = 6.0f;
+    float camSpeed = 12.0f;
 
-    if (input->IsKeyDown(GLFW_KEY_LEFT_SHIFT)) camSpeed *= 2;
+    if (input->IsKeyDown(GLFW_KEY_LEFT_SHIFT)) camSpeed *= 4;
 
     if (input->IsMouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT)) {
         glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -95,6 +102,11 @@ void BlockGame::OnUpdate(const float deltaTime) {
 
     renderer.Begin(camera);
     
+    glDepthFunc(GL_LEQUAL);
+
+    renderer.Submit(skyMesh, {sky_Shader_handle,0}, Transform{{0,0,0}, {0,0,0}, {500,500,500}});
+
+    glDepthFunc(GL_LESS);
 
     chunkManager.Render(renderer, test_Shader_handle, tHandle);
 

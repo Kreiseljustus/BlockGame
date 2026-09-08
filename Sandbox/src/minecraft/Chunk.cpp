@@ -11,9 +11,10 @@ using namespace Engine::Rendering;
 MeshData Chunk::GenerateChunkMesh(const Chunk& chunk) {
     MeshData data;
 
-    auto addFace = [&](const glm::vec3 blockPos, const glm::vec3 normal, const glm::vec3 corners[4]) {
+    auto addFace = [&](const glm::vec3 blockPos, const glm::vec3 normal, const glm::vec3 corners[4], BlockType type) {
         const auto start = static_cast<uint32_t>(data.vertices.size());
-        glm::vec2 uvs[4] = {{0,0}, {1,0}, {1,1}, {0,1}};
+        glm::vec2 uvs[4];
+        GetTileUVs(type, uvs);
 
         for (int i = 0; i < 4; i++) {
             Vertex v;
@@ -38,36 +39,44 @@ MeshData Chunk::GenerateChunkMesh(const Chunk& chunk) {
                 if (chunk.GetBlockAt(x,y,z) == BlockType::Air) continue;
 
                 const glm::vec3 pos = {static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)};
+                BlockType type = chunk.GetBlockAt(x,y,z);
+                if (type == BlockType::GrassPlant) {
+                    const glm::vec3 c[4] = {{1,0,0}, {1,1,0}, {0,0,1}, {0,1,1}};
+                    addFace(pos, {0.707,0,0.707}, c, type);
+                    const glm::vec3 c2[4] = {{1,1,1}, {1,0,1}, {0,1,0}, {0,0,0}};
+                    addFace(pos, {0.707,0,-0.707}, c2, type);
+                    continue;
+                }
 
                 //+X face
                 if (chunk.GetBlockAt(x + 1, y, z) == BlockType::Air) {
                     const glm::vec3 c[4] = {{1,0,0}, {1,1,0}, {1,1,1}, {1,0,1}};
-                    addFace(pos, {1, 0, 0}, c);
+                    addFace(pos, {1, 0, 0}, c, type);
                 }
                 //-X face
                 if (chunk.GetBlockAt(x - 1, y, z) == BlockType::Air) {
                     const glm::vec3 c[4] = {{0,0,1}, {0,1,1}, {0,1,0}, {0,0,0}};
-                    addFace(pos, {-1, 0, 0}, c);
+                    addFace(pos, {-1, 0, 0}, c, type);
                 }
                 //+Y face (top)
                 if (chunk.GetBlockAt(x, y + 1, z) == BlockType::Air) {
                     const glm::vec3 c[4] = {{0,1,0}, {0,1,1}, {1,1,1}, {1,1,0}};
-                    addFace(pos, {0, 1, 0}, c);
+                    addFace(pos, {0, 1, 0}, c, type);
                 }
                 //-Y face (bottom)
                 if (chunk.GetBlockAt(x, y - 1, z) == BlockType::Air) {
                     const glm::vec3 c[4] = {{0,0,1}, {0,0,0}, {1,0,0}, {1,0,1}};
-                    addFace(pos, {0, -1, 0}, c);
+                    addFace(pos, {0, -1, 0}, c, type);
                 }
                 //+Z face
                 if (chunk.GetBlockAt(x, y, z + 1) == BlockType::Air) {
                     const glm::vec3 c[4] = {{0,0,1}, {1,0,1}, {1,1,1}, {0,1,1}};
-                    addFace(pos, {0, 0, 1}, c);
+                    addFace(pos, {0, 0, 1}, c, type);
                 }
 
                 if (chunk.GetBlockAt(x, y, z - 1) == BlockType::Air) {
                     const glm::vec3 c[4] = {{1,0,0}, {0,0,0}, {0,1,0}, {1,1,0}};
-                    addFace(pos, {0, 0, -1}, c);
+                    addFace(pos, {0, 0, -1}, c, type);
                 }
             }
         }

@@ -39,6 +39,9 @@ private:
 
     TextureHandle tHandle;
     ShaderHandle test_Shader_handle;
+    ShaderHandle sky_Shader_handle;
+
+    MeshHandle skyMesh;
 
     ChunkManager chunkManager;
 
