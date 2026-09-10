@@ -49,7 +49,7 @@ namespace Engine::Core {
         ApplicationSpecification m_Specs;
         std::unique_ptr<Window> m_Window;
         std::vector<Layer*> m_LayerStack;
-       // ImGuiLayer m_ImGuiLayer;
+        ImGuiLayer* m_ImGuiLayer;
 
         bool m_Running = true;
         bool m_Minimized = false;

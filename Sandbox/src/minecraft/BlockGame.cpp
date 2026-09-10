@@ -7,6 +7,7 @@
 #include <stb_image.h>
 
 #include "ResourceManager.h"
+#include "../../../cmake-build-debug-visual-studio/_deps/imgui-src/imgui.h"
 #include "Core/Application.h"
 #include "Rendering/PrimitiveProvider.h"
 #include "Rendering/Backends/OpenGLBackend.h"
@@ -101,12 +102,17 @@ void BlockGame::OnUpdate(const float deltaTime) {
     chunkManager.Update(camera.position, renderer, perlin);
 
     renderer.Begin(camera);
-    
+
+    /*
+    glDepthMask(GL_FALSE);
     glDepthFunc(GL_LEQUAL);
+    glDisable(GL_CULL_FACE);
 
-    renderer.Submit(skyMesh, {sky_Shader_handle,0}, Transform{{0,0,0}, {0,0,0}, {500,500,500}});
+    renderer.Submit(skyMesh, {sky_Shader_handle,0}, Transform{{0,0,0}, {0,0,0}, {1,1,1}});
 
+    glDepthMask(GL_TRUE);
     glDepthFunc(GL_LESS);
+    glEnable(GL_CULL_FACE);*/
 
     chunkManager.Render(renderer, test_Shader_handle, tHandle);
 
@@ -116,6 +122,10 @@ void BlockGame::OnUpdate(const float deltaTime) {
 void BlockGame::OnEvent(Event& event) {
     EventDispatcher dispatcher(event);
     dispatcher.Dispatch<Events::WindowResizeEvent>([this](Events::WindowResizeEvent& resize){return OnResize(resize);});
+}
+
+void BlockGame::OnImGuiRender() {
+    ImGui::ShowDemoWindow();
 }
 
 bool BlockGame::OnResize(Events::WindowResizeEvent& e) {

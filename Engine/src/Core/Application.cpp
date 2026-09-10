@@ -27,8 +27,8 @@ Application::Application(const ApplicationSpecification& specs) : m_Specs(specs)
     m_Window->SetEventCallback([this](Event& e) {OnEvent(e);});
     m_Window->create();
 
-    //m_ImGuiLayer = new ImGuiLayer();
-    //PushLayer(m_ImGuiLayer);
+    m_ImGuiLayer = new ImGuiLayer();
+    PushLayer(m_ImGuiLayer);
 }
 
 Application::~Application() {
@@ -88,11 +88,11 @@ void Application::Run() {
                 layer->OnUpdate(deltaTime);
             }
 
-            //m_ImGuiLayer->Begin();
+            m_ImGuiLayer->Begin();
             for (Layer* layer : m_LayerStack) {
                 layer->OnImGuiRender();
             }
-            //m_ImGuiLayer->End();
+            m_ImGuiLayer->End();
 
             glfwSwapBuffers(m_Window->getWindow());
         }

@@ -8,7 +8,7 @@
 #include "imgui_impl_opengl3.h"
 #include "Core/Application.h"
 #include "imgui_impl_glfw.h"
-/*
+
 Engine::ImGuiLayer::ImGuiLayer() = default;
 
 void Engine::ImGuiLayer::OnAttach() {
@@ -48,4 +48,3 @@ void Engine::ImGuiLayer::End() {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
-*/

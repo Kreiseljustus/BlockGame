@@ -29,6 +29,7 @@ public:
     void OnDetach() override;
     void OnUpdate(float deltaTime) override;
     void OnEvent(Event &event) override;
+    void OnImGuiRender() override;
 
     bool OnResize([[maybe_unused]] Events::WindowResizeEvent& e);
 
