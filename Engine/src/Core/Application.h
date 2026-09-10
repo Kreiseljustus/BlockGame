@@ -42,12 +42,14 @@ namespace Engine::Core {
         static Application& Get() {return *s_Instance;}
         void Run();
     private:
+
+        //DONT MOVE
+        Input input;
+
         ApplicationSpecification m_Specs;
         std::unique_ptr<Window> m_Window;
         std::vector<Layer*> m_LayerStack;
        // ImGuiLayer m_ImGuiLayer;
-
-        Input input;
 
         bool m_Running = true;
         bool m_Minimized = false;
