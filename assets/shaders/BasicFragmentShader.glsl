@@ -13,6 +13,9 @@ void main() {
     float diffuse = max(dot(normal, lightDir), 0.0);
     float ambient = 0.15;
 
-    vec3 texColor = texture(textureA, oTex).rgb;
-    FragColor = vec4(texColor * (ambient + diffuse), 1.0);
+    vec4 texColor = texture(textureA, oTex);
+
+    vec3 litColor = texColor.rgb * (ambient + diffuse);
+
+    FragColor = vec4(litColor, texColor.a);
 }

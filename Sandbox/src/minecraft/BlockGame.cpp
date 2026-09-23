@@ -103,7 +103,7 @@ void BlockGame::OnUpdate(const float deltaTime) {
 
     renderer.Begin(camera);
 
-    /*
+
     glDepthMask(GL_FALSE);
     glDepthFunc(GL_LEQUAL);
     glDisable(GL_CULL_FACE);
@@ -112,7 +112,7 @@ void BlockGame::OnUpdate(const float deltaTime) {
 
     glDepthMask(GL_TRUE);
     glDepthFunc(GL_LESS);
-    glEnable(GL_CULL_FACE);*/
+    glEnable(GL_CULL_FACE);
 
     chunkManager.Render(renderer, test_Shader_handle, tHandle);
 
@@ -125,7 +125,7 @@ void BlockGame::OnEvent(Event& event) {
 }
 
 void BlockGame::OnImGuiRender() {
-    ImGui::ShowDemoWindow();
+    ImGui::Text(std::to_string(camera.rotation.y).c_str());
 }
 
 bool BlockGame::OnResize(Events::WindowResizeEvent& e) {
