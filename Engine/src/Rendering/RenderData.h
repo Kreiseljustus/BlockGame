@@ -41,7 +41,7 @@ namespace Engine::Rendering {
         float farPlane = 1000.0f;
     };
 
-    enum TextureType : int {
+    enum TextureType : GLenum {
         TEXTURE_2D = 0x0DE1,
         TEXTURE_3D = 0x806F,
         TEXTURE_CUBE_MAP = 0x8513,

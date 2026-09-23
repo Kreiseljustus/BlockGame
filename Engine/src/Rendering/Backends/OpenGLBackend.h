@@ -51,6 +51,7 @@ namespace Engine::Rendering {
             int width = 0;
             int height = 0;
             GLenum format = GL_RGBA;
+            GLenum type = GL_TEXTURE_2D;
         };
 
         std::vector<GPUMesh> m_Meshes;

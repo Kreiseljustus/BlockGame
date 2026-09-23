@@ -26,6 +26,8 @@ void OpenGLBackend::Begin() {
     glClearColor(0.5,0.5,0.5,255);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glEnable(GL_BLEND);
+
     m_ShadersUpdatedCurrentFrame.clear();
 }
 
@@ -149,19 +151,25 @@ TextureHandle OpenGLBackend::CreateTexture(const TextureParameters& parameters) 
     tex.width = parameters.width;
     tex.height = parameters.height;
     tex.format = static_cast<GLenum>(parameters.format);
+    tex.type = parameters.type;
 
     glGenTextures(1, &tex.id);
-    glBindTexture(GL_TEXTURE_2D, tex.id);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, parameters.wrapping);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, parameters.wrapping);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, parameters.filter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, parameters.filter);
+    const GLenum textureType = parameters.type;
 
-    glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(tex.format), tex.width, tex.height, 0,
-             tex.format, parameters.dataType, parameters.imageData);
+    glBindTexture(textureType, tex.id);
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glTexParameteri(textureType, GL_TEXTURE_WRAP_S, parameters.wrapping);
+    glTexParameteri(textureType, GL_TEXTURE_WRAP_T, parameters.wrapping);
+    glTexParameteri(textureType, GL_TEXTURE_MIN_FILTER, parameters.filter);
+    glTexParameteri(textureType, GL_TEXTURE_MAG_FILTER, parameters.filter);
+
+    if (textureType == GL_TEXTURE_2D) {
+        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(tex.format), tex.width, tex.height, 0,
+                 tex.format, parameters.dataType, parameters.imageData);
+    }
+
+    glBindTexture(textureType, 0);
 
     m_Textures.push_back(tex);
     return {static_cast<uint32_t>(m_Textures.size() - 1)};
@@ -178,13 +186,14 @@ void OpenGLBackend::UpdateTexture(const TextureHandle handle, const void *pixelD
         return;
     }
 
-    //TODO: Add texture types
-
     const GPUTexture& tex = m_Textures[handle.handle];
-    glBindTexture(GL_TEXTURE_2D, tex.id);
+    const GLenum textureType = tex.type;
+    glBindTexture(textureType, tex.id);
 
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex.width, tex.height, tex.format, GL_UNSIGNED_BYTE, pixelData);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    if (textureType == GL_TEXTURE_2D) {
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex.width, tex.height, tex.format, GL_UNSIGNED_BYTE, pixelData);
+    }
+    glBindTexture(textureType, 0);
 }
 
 void OpenGLBackend::UpdateMesh(MeshHandle handle, const MeshData &data) {
