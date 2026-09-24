@@ -40,10 +40,14 @@ void BlockGame::OnAttach() {
     sky_Shader_handle = ResourceManager::GetShader("sky");
 
     Rendering::TextureParameters tParams;
-    int channels;
-    tParams.imageData = stbi_load("assets/textures/block_atlas.png", &tParams.width, &tParams.height, &channels, 4);
+    ResourceManager::LoadTexture(tParams, "assets/textures/block_atlas.png", "block_atlas");
+
+    TextureParameters skyBox;
+    skyBox.type = TEXTURE_CUBE_MAP;
+    ResourceManager::LoadTexture(skyBox, "assets/textures/test_skybox.png", "skybox");
 
     tHandle = renderer.CreateTexture(tParams);
+    skybox = renderer.CreateTexture(skyBox);
 
     camera.projection = ProjectionType::Perspective;
     camera.position = {0,0,5};
@@ -103,18 +107,25 @@ void BlockGame::OnUpdate(const float deltaTime) {
 
     renderer.Begin(camera);
 
-
     glDepthMask(GL_FALSE);
     glDepthFunc(GL_LEQUAL);
     glDisable(GL_CULL_FACE);
 
-    renderer.Submit(skyMesh, {sky_Shader_handle,0}, Transform{{0,0,0}, {0,0,0}, {1,1,1}});
-
+    renderer.Submit(
+        skyMesh,
+        {sky_Shader_handle, skybox.handle},
+        Transform{
+            {0,1,1},
+            {0, 0, 0},
+            {1, 1, 1}
+        }
+    );
     glDepthMask(GL_TRUE);
     glDepthFunc(GL_LESS);
     glEnable(GL_CULL_FACE);
 
-    chunkManager.Render(renderer, test_Shader_handle, tHandle);
+    //chunkManager.Render(renderer, test_Shader_handle, tHandle);
+    //renderer.Submit(skyMesh, {test_Shader_handle, skybox.handle}, Transform{{0,2,0}, {0,0,0}, {1,1,1}});
 
     renderer.End();
 }

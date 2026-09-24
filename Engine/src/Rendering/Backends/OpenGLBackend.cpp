@@ -71,16 +71,18 @@ void OpenGLBackend::Draw(const MeshHandle mesh, const Material material, const T
 
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-    glBindTexture(GL_TEXTURE_2D, 0);
-
     //TODO: Add support for different texture types
     if (material.textureHandle.handle != 0) {
         if (material.textureHandle.handle >= m_Textures.size()) {
             std::cout << "Invalid texture handle: " << material.textureHandle.handle << std::endl;
         } else {
             const GPUTexture& tex = m_Textures[material.textureHandle.handle];
+
+            GLenum tType = tex.type;
+
+            glBindTexture(tType, 0);
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(TEXTURE_2D, tex.id);
+            glBindTexture(tType, tex.id);
 
             const GLint texLoc = glGetUniformLocation(material.shaderHandle.handle, "textureA");
             glUniform1i(texLoc, 0);
@@ -170,7 +172,7 @@ TextureHandle OpenGLBackend::CreateTexture(const TextureParameters& parameters) 
     } else if (textureType == GL_TEXTURE_CUBE_MAP) {
         for (unsigned int i = 0; i < 6; i++) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,0, static_cast<int>(tex.format), tex.width, tex.height, 0,
-                 tex.format, parameters.dataType, parameters.imageData);
+                 tex.format, parameters.dataType, parameters.cubemapFaces[i]);
         }
 
         glTexParameteri(textureType, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);

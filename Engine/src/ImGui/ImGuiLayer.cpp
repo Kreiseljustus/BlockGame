@@ -31,7 +31,23 @@ void Engine::ImGuiLayer::OnDetach() {
 }
 
 void Engine::ImGuiLayer::OnEvent(Core::Event& event) {
-    Layer::OnEvent(event);
+    ImGuiIO& io = ImGui::GetIO();
+
+    Core::EventDispatcher dispatcher(event);
+    dispatcher.Dispatch<Events::MouseButtonPressedEvent>(
+        [&io](const Events::MouseButtonPressedEvent& press)
+        {
+            io.AddMouseButtonEvent(press.Button, true);
+            return true;
+        }
+    );
+    dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(
+       [&io](const Events::MouseButtonReleasedEvent& release)
+       {
+           io.AddMouseButtonEvent(release.Button, false);
+           return true;
+       }
+   );
 }
 
 void Engine::ImGuiLayer::Begin() {

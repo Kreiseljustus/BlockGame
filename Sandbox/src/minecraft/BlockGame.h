@@ -39,6 +39,7 @@ private:
     Window window;
 
     TextureHandle tHandle;
+    TextureHandle skybox;
     ShaderHandle test_Shader_handle;
     ShaderHandle sky_Shader_handle;
 
