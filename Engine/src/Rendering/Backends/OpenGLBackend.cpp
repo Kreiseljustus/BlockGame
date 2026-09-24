@@ -167,6 +167,13 @@ TextureHandle OpenGLBackend::CreateTexture(const TextureParameters& parameters) 
     if (textureType == GL_TEXTURE_2D) {
         glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(tex.format), tex.width, tex.height, 0,
                  tex.format, parameters.dataType, parameters.imageData);
+    } else if (textureType == GL_TEXTURE_CUBE_MAP) {
+        for (unsigned int i = 0; i < 6; i++) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,0, static_cast<int>(tex.format), tex.width, tex.height, 0,
+                 tex.format, parameters.dataType, parameters.imageData);
+        }
+
+        glTexParameteri(textureType, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     }
 
     glBindTexture(textureType, 0);

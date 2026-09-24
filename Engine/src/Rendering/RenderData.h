@@ -4,6 +4,7 @@
 
 #ifndef BLOCKGAME_RENDERDATA_H
 #define BLOCKGAME_RENDERDATA_H
+#include <array>
 #include <cstdint>
 #include <vector>
 #include <filesystem>
@@ -67,6 +68,7 @@ namespace Engine::Rendering {
         int dataType = GL_UNSIGNED_BYTE;
 
         unsigned char* imageData = nullptr;
+        std::array<unsigned char*, 6> cubemapFaces{};
     };
 
     struct ShaderParameters {
