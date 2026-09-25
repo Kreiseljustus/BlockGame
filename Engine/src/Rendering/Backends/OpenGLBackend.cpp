@@ -42,7 +42,16 @@ void OpenGLBackend::Draw(const MeshHandle mesh, const Material material, const T
     }
     const GPUMesh& gpuMesh = m_Meshes[mesh.backendID];
 
+    glDepthMask(GL_TRUE);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
     glUseProgram(material.shaderHandle.handle);
+
+    if (material.disableDepth) {
+        glDepthMask(GL_FALSE);
+        glDepthFunc(GL_LEQUAL);
+    }
 
     uint32_t shaderHandle = material.shaderHandle.handle;
 

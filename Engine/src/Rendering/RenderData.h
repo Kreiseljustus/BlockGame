@@ -97,6 +97,7 @@ namespace Engine::Rendering {
     struct Material {
         ShaderHandle shaderHandle = {0};
         TextureHandle textureHandle = {0};
+        bool disableDepth = false;
         //Color and other stuff
     };
 

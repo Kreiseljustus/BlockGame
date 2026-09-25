@@ -1,14 +1,13 @@
 #fragment
 #version 330 core
 
+in vec3 TexCoords;
+
 out vec4 FragColor;
 
-in vec3 TexCoords;
+uniform samplerCube textureA;
 
 void main()
 {
-    FragColor = vec4(
-        TexCoords * 0.5 + 0.5,
-        1.0
-    );
-}
+    FragColor = texture(textureA, TexCoords);
+    }

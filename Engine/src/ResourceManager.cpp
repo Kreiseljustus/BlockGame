@@ -83,15 +83,10 @@ MeshData ResourceManager::GetMesh(const std::string& alias) {
     }
 }
 
-TextureParameters ResourceManager::LoadTexture(
-    TextureParameters& tParams,
-    const std::filesystem::path& texturePath,
-    std::string alias)
-{
+TextureParameters ResourceManager::LoadTexture(TextureParameters& tParams, const std::filesystem::path& texturePath, std::string alias) {
     int channels;
 
-    if (tParams.type != TEXTURE_CUBE_MAP)
-    {
+    if (tParams.type != TEXTURE_CUBE_MAP) {
         tParams.imageData = stbi_load(
             texturePath.string().c_str(),
             &tParams.width,
@@ -100,8 +95,7 @@ TextureParameters ResourceManager::LoadTexture(
             4
         );
     }
-    else
-    {
+    else {
         int imageWidth;
         int imageHeight;
 
@@ -113,18 +107,13 @@ TextureParameters ResourceManager::LoadTexture(
             4
         );
 
-        if (!imageData)
-        {
-            std::cerr << "Failed to load cubemap: "
-                      << texturePath << std::endl;
+        if (!imageData) {
+            std::cerr << "Failed to load cubemap: " << texturePath << std::endl;
 
             return tParams;
         }
 
-        if (imageWidth % 4 != 0 ||
-            imageHeight % 3 != 0 ||
-            imageWidth / 4 != imageHeight / 3)
-        {
+        if (imageWidth % 4 != 0 || imageHeight % 3 != 0 || imageWidth / 4 != imageHeight / 3) {
             std::cerr << "Invalid cubemap dimensions: " << imageWidth << "x" << imageHeight << std::endl;
 
             stbi_image_free(imageData);
@@ -142,17 +131,14 @@ TextureParameters ResourceManager::LoadTexture(
             static_cast<size_t>(faceSize) *
             bytesPerPixel;
 
-        for (auto& face : tParams.cubemapFaces)
-        {
+        for (auto& face : tParams.cubemapFaces) {
             //TODO: Memory leak
             face = new unsigned char[faceSizeBytes];
         }
 
         auto copyFace =
-            [&](unsigned char* dst, const int faceX, const int faceY)
-        {
-            for (int y = 0; y < faceSize; ++y)
-            {
+            [&](unsigned char* dst, const int faceX, const int faceY){
+            for (int y = 0; y < faceSize; ++y) {
                 const unsigned char* src =
                     imageData +
                     (

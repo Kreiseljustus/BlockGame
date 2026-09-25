@@ -44,7 +44,7 @@ void BlockGame::OnAttach() {
 
     TextureParameters skyBox;
     skyBox.type = TEXTURE_CUBE_MAP;
-    ResourceManager::LoadTexture(skyBox, "assets/textures/test_skybox.png", "skybox");
+    ResourceManager::LoadTexture(skyBox, "assets/textures/minecraft_skybox.png", "skybox");
 
     tHandle = renderer.CreateTexture(tParams);
     skybox = renderer.CreateTexture(skyBox);
@@ -52,6 +52,7 @@ void BlockGame::OnAttach() {
     camera.projection = ProjectionType::Perspective;
     camera.position = {0,0,5};
     camera.orthoSize = 3.0f;
+    camera.farPlane = 10000;
     camera.aspect = static_cast<float>(window.getFrameBufferSize().x) / static_cast<float>(window.getFrameBufferSize().y);
 
     skyMesh = renderer.CreateMesh(GetUnitCube());
@@ -107,26 +108,17 @@ void BlockGame::OnUpdate(const float deltaTime) {
 
     renderer.Begin(camera);
 
-    glDepthMask(GL_FALSE);
-    glDepthFunc(GL_LEQUAL);
-    glDisable(GL_CULL_FACE);
-
     renderer.Submit(
         skyMesh,
-        {sky_Shader_handle, skybox.handle},
+        {sky_Shader_handle, skybox.handle, false},
         Transform{
-            {0,1,1},
+            camera.position,
             {0, 0, 0},
-            {1, 1, 1}
+            {6000, 6000, 6000}
         }
     );
-    glDepthMask(GL_TRUE);
-    glDepthFunc(GL_LESS);
-    glEnable(GL_CULL_FACE);
 
-    //chunkManager.Render(renderer, test_Shader_handle, tHandle);
-    //renderer.Submit(skyMesh, {test_Shader_handle, skybox.handle}, Transform{{0,2,0}, {0,0,0}, {1,1,1}});
-
+    chunkManager.Render(renderer, test_Shader_handle, tHandle);
     renderer.End();
 }
 

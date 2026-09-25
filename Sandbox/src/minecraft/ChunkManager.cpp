@@ -42,7 +42,7 @@ void ChunkManager::Render(Renderer &renderer, ShaderHandle shader, TextureHandle
         t.position = {coord.x * CHUNK_SIZE_XZ, 0, coord.z * CHUNK_SIZE_XZ};
         t.rotation = {0,0,0};
         t.scale = {1,1,1};
-        renderer.Submit(chunk.GetMesh(), {shader, texture}, t);
+        renderer.Submit(chunk.GetMesh(), {shader, texture, false}, t);
     }
 }
 
