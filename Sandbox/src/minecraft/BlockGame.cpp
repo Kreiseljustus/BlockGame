@@ -11,6 +11,7 @@
 #include "Core/Application.h"
 #include "Rendering/PrimitiveProvider.h"
 #include "Rendering/Backends/OpenGLBackend.h"
+#include "VoxelRaycast.h"
 
 
 std::vector<Transform> fillUp(Transform t) {
@@ -103,6 +104,19 @@ void BlockGame::OnUpdate(const float deltaTime) {
         if (input->IsKeyDown(GLFW_KEY_S)) camera.position -= forward * camSpeed * deltaTime;
         if (input->IsKeyDown(GLFW_KEY_A)) camera.position -= right * camSpeed * deltaTime;
         if (input->IsKeyDown(GLFW_KEY_D)) camera.position += right * camSpeed * deltaTime;
+
+        if (input->IsMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+            RaycastResult ray = VoxelRaycast(camera.position, forward, 9, chunkManager);
+
+            if (ray.hit) {
+                GlobalPosToLocalBlockInfo info = chunkManager.WorldToChunkPos(ray.blockPos);
+                glm::vec3 localC = info.localCoords;
+                std::cout << "Destroy block at: " <<  "x: "<<localC.x << "y: " << localC.y << "z: " << localC.z << std::endl;
+                info.chunk->SetBlockAt(localC.x, localC.y, localC.z, BlockType::Air);
+                MeshData data = Chunk::GenerateChunkMesh(*info.chunk);
+                renderer.UpdateMesh(info.chunk->GetMesh(), data);
+            }
+        }
     } else {
         glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         input->ConsumeMouseDelta();

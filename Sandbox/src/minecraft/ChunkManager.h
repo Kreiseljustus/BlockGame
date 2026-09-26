@@ -9,10 +9,18 @@
 #include "Rendering/Renderer.h"
 
 #include <unordered_map>
+#include <glm/vec3.hpp>
+
+struct GlobalPosToLocalBlockInfo {
+    Chunk* chunk;
+    glm::vec3 localCoords;
+};
 
 class ChunkManager {
 public:
-    void Update(const glm::vec3& playerPos, Engine::Rendering::Renderer& renderer, const siv::PerlinNoise& perlin);
+    bool IsBlockSolid(const glm::ivec3& worldBlockPos) const;
+    GlobalPosToLocalBlockInfo WorldToChunkPos(glm::ivec3 worldPos);
+    void Update(const glm::vec3& playerPos, const Engine::Rendering::Renderer& renderer, const siv::PerlinNoise& perlin);
     void Render(Engine::Rendering::Renderer& renderer, Engine::Rendering::ShaderHandle shader, Engine::Rendering::TextureHandle texture);
 private:
     static ChunkCoord WorldToChunkCoord(const glm::vec3& worldPos);
