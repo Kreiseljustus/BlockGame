@@ -24,6 +24,7 @@ OpenGLBackend::OpenGLBackend() {
 
 void OpenGLBackend::Begin() {
     glClearColor(0.5,0.5,0.5,255);
+    glDepthMask(GL_TRUE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glEnable(GL_BLEND);
@@ -184,7 +185,7 @@ TextureHandle OpenGLBackend::CreateTexture(const TextureParameters& parameters) 
                  tex.format, parameters.dataType, parameters.cubemapFaces[i]);
         }
 
-        glTexParameteri(textureType, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glTexParameteri(textureType, GL_TEXTURE_WRAP_R, parameters.wrapping);
     }
 
     glBindTexture(textureType, 0);

@@ -7,7 +7,7 @@
 #include <stb_image.h>
 
 #include "ResourceManager.h"
-#include "../../../cmake-build-debug-visual-studio/_deps/imgui-src/imgui.h"
+#include "imgui.h"
 #include "Core/Application.h"
 #include "Rendering/PrimitiveProvider.h"
 #include "Rendering/Backends/OpenGLBackend.h"
@@ -39,20 +39,24 @@ void BlockGame::OnAttach() {
     test_Shader_handle = ResourceManager::GetShader("basic");
     sky_Shader_handle = ResourceManager::GetShader("sky");
 
-    Rendering::TextureParameters tParams;
+    TextureParameters tParams;
     ResourceManager::LoadTexture(tParams, "assets/textures/block_atlas.png", "block_atlas");
 
     TextureParameters skyBox;
     skyBox.type = TEXTURE_CUBE_MAP;
+    skyBox.wrapping = CLAMP_TO_EDGE;
     ResourceManager::LoadTexture(skyBox, "assets/textures/minecraft_skybox.png", "skybox");
 
     tHandle = renderer.CreateTexture(tParams);
+
+    skyBox.filter = LINEAR;
     skybox = renderer.CreateTexture(skyBox);
 
     camera.projection = ProjectionType::Perspective;
-    camera.position = {0,0,5};
+    camera.position = {0,100,5};
     camera.orthoSize = 3.0f;
-    camera.farPlane = 10000;
+    camera.farPlane = 700;
+    camera.nearPlane = 1.0;
     camera.aspect = static_cast<float>(window.getFrameBufferSize().x) / static_cast<float>(window.getFrameBufferSize().y);
 
     skyMesh = renderer.CreateMesh(GetUnitCube());
@@ -110,11 +114,11 @@ void BlockGame::OnUpdate(const float deltaTime) {
 
     renderer.Submit(
         skyMesh,
-        {sky_Shader_handle, skybox.handle, false},
+        {sky_Shader_handle, skybox.handle, true},
         Transform{
             camera.position,
             {0, 0, 0},
-            {6000, 6000, 6000}
+            {1000, 1000, 1000}
         }
     );
 

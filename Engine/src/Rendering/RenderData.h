@@ -51,7 +51,8 @@ namespace Engine::Rendering {
 
     enum TextureWrapping : int {
         CLAMP = 0x2900,
-        REPEAT = 0x2901
+        REPEAT = 0x2901,
+        CLAMP_TO_EDGE = 0x812F
     };
 
     enum TextureFilter : int {

@@ -1,0 +1,12 @@
+Engine:
+
+Asset Banks
+Basic 2D Editor/Level Layout Software
+ECS
+Shader Abstraction
+Actual Model Loading API
+
+Define File Formats
+
+BlockGame:
+Add Block placing / destruction (requires raycasting / physics??)
