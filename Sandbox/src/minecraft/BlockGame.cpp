@@ -57,7 +57,7 @@ void BlockGame::OnAttach() {
     camera.position = {0,100,5};
     camera.orthoSize = 3.0f;
     camera.farPlane = 700;
-    camera.nearPlane = 1.0;
+    camera.nearPlane = .3;
     camera.aspect = static_cast<float>(window.getFrameBufferSize().x) / static_cast<float>(window.getFrameBufferSize().y);
 
     skyMesh = renderer.CreateMesh(GetUnitCube());
@@ -146,7 +146,12 @@ void BlockGame::OnEvent(Event& event) {
 }
 
 void BlockGame::OnImGuiRender() {
-    ImGui::Text(std::to_string(camera.rotation.y).c_str());
+    int yaw = static_cast<int>(camera.rotation.y) % 360;
+    if (yaw < 0 ) yaw += 360;
+    ImGui::Text(std::to_string(yaw).c_str());
+    std::ostringstream oss;
+    oss << "Position: " << std::round(camera.position.x) << " " << std::round(camera.position.y) << " " << std::round(camera.position.z);
+    ImGui::Text(oss.str().c_str());
 }
 
 bool BlockGame::OnResize(Events::WindowResizeEvent& e) {
