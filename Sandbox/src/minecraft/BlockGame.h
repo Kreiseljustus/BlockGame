@@ -49,6 +49,10 @@ private:
 
     Input* input;
 
+    bool showCursor;
+
+    BlockType selectedBlock;
+
     const siv::PerlinNoise::seed_type seed = 12345;
     const siv::PerlinNoise perlin{seed};
 };

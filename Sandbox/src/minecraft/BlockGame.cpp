@@ -33,6 +33,10 @@ BlockGame::BlockGame() : renderer(std::make_unique<Rendering::OpenGLBackend>()),
 }
 
 void BlockGame::OnAttach() {
+    selectedBlock = BlockType::Dirt;
+    showCursor = false;
+    glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     ResourceManager::LoadShader("assets/shaders/BasicVertexShader.glsl", "assets/shaders/BasicFragmentShader.glsl", "basic");
 
     ResourceManager::LoadShader("assets/shaders/sky_vs.glsl", "assets/shaders/sky_fs.glsl", "sky");
@@ -74,6 +78,9 @@ void BlockGame::OnUpdate(const float deltaTime) {
     title.append(std::to_string(1.0f/deltaTime));
     glfwSetWindowTitle(window.getWindow(), title.c_str());
 
+    if (showCursor) {
+        glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    } else glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     camera.aspect = static_cast<float>(window.getFrameBufferSize().x) / static_cast<float>(window.getFrameBufferSize().y);
 
@@ -82,45 +89,69 @@ void BlockGame::OnUpdate(const float deltaTime) {
 
     if (input->IsKeyDown(GLFW_KEY_LEFT_SHIFT)) camSpeed *= 4;
 
+    glm::vec2 mouseDelta = input->ConsumeMouseDelta();
+    camera.rotation.y -= mouseDelta.x * lookSensitivity; // yaw
+    camera.rotation.x -= mouseDelta.y * lookSensitivity; // pitch
+    camera.rotation.x = std::clamp(camera.rotation.x, -89.0f, 89.0f);
+
+    float yawRad = glm::radians(camera.rotation.y);
+    float pitchRad = glm::radians(camera.rotation.x);
+
+    glm::vec3 forward = {
+        -sinf(yawRad) * cosf(pitchRad),
+        sinf(pitchRad),
+        -cosf(yawRad) * cosf(pitchRad)
+    };
+    glm::vec3 right = {cosf(yawRad), 0, -sinf(yawRad)};
+
+    if (input->IsKeyDown(GLFW_KEY_W)) camera.position += forward * camSpeed * deltaTime;
+    if (input->IsKeyDown(GLFW_KEY_S)) camera.position -= forward * camSpeed * deltaTime;
+    if (input->IsKeyDown(GLFW_KEY_A)) camera.position -= right * camSpeed * deltaTime;
+    if (input->IsKeyDown(GLFW_KEY_D)) camera.position += right * camSpeed * deltaTime;
+
+    if (input->IsKeyDown(GLFW_KEY_ESCAPE)) showCursor = !showCursor;
+
+    if (input->IsKeyDown(GLFW_KEY_R)) {
+        constexpr int first = static_cast<int>(BlockType::Stone);
+        constexpr int last = static_cast<int>(BlockType::Leave);
+        constexpr int count = last - first + 1;
+
+        int index = static_cast<int>(selectedBlock) - first;
+        index = (index + 1 ) % count;
+
+        selectedBlock = static_cast<BlockType>(first + index);
+    }
+
+    if (input->IsMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+        RaycastResult ray = VoxelRaycast(camera.position, forward, 9, chunkManager);
+
+        if (ray.hit) {
+            GlobalPosToLocalBlockInfo info = chunkManager.WorldToChunkPos(ray.blockPos);
+            glm::vec3 localC = info.localCoords;
+            std::cout << "Destroy block at: " <<  "x: "<<localC.x << "y: " << localC.y << "z: " << localC.z << std::endl;
+            info.chunk->SetBlockAt(localC.x, localC.y, localC.z, BlockType::Air);
+            MeshData data = Chunk::GenerateChunkMesh(*info.chunk);
+            renderer.UpdateMesh(info.chunk->GetMesh(), data);
+        }
+    }
+
     if (input->IsMouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT)) {
-        glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        RaycastResult ray = VoxelRaycast(camera.position, forward, 9, chunkManager);
 
-        glm::vec2 mouseDelta = input->ConsumeMouseDelta();
-        camera.rotation.y -= mouseDelta.x * lookSensitivity; // yaw
-        camera.rotation.x -= mouseDelta.y * lookSensitivity; // pitch
-        camera.rotation.x = std::clamp(camera.rotation.x, -89.0f, 89.0f);
-
-        float yawRad = glm::radians(camera.rotation.y);
-        float pitchRad = glm::radians(camera.rotation.x);
-
-        glm::vec3 forward = {
-            -sinf(yawRad) * cosf(pitchRad),
-            sinf(pitchRad),
-            -cosf(yawRad) * cosf(pitchRad)
-        };
-        glm::vec3 right = {cosf(yawRad), 0, -sinf(yawRad)};
-
-        if (input->IsKeyDown(GLFW_KEY_W)) camera.position += forward * camSpeed * deltaTime;
-        if (input->IsKeyDown(GLFW_KEY_S)) camera.position -= forward * camSpeed * deltaTime;
-        if (input->IsKeyDown(GLFW_KEY_A)) camera.position -= right * camSpeed * deltaTime;
-        if (input->IsKeyDown(GLFW_KEY_D)) camera.position += right * camSpeed * deltaTime;
-
-        if (input->IsMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-            RaycastResult ray = VoxelRaycast(camera.position, forward, 9, chunkManager);
-
-            if (ray.hit) {
-                GlobalPosToLocalBlockInfo info = chunkManager.WorldToChunkPos(ray.blockPos);
+        if (ray.hit) {
+            glm::ivec3 placePos = ray.blockPos + ray.normal;
+            GlobalPosToLocalBlockInfo info = chunkManager.WorldToChunkPos(placePos);
+            if (info.chunk) {
                 glm::vec3 localC = info.localCoords;
-                std::cout << "Destroy block at: " <<  "x: "<<localC.x << "y: " << localC.y << "z: " << localC.z << std::endl;
-                info.chunk->SetBlockAt(localC.x, localC.y, localC.z, BlockType::Air);
+                std::cout << "Create block at: " <<  "x: "<<localC.x << "y: " << localC.y << "z: " << localC.z << std::endl;
+                info.chunk->SetBlockAt(localC.x, localC.y, localC.z, selectedBlock);
                 MeshData data = Chunk::GenerateChunkMesh(*info.chunk);
                 renderer.UpdateMesh(info.chunk->GetMesh(), data);
             }
         }
-    } else {
-        glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        input->ConsumeMouseDelta();
     }
+
+    input->ConsumeMouseDelta();
 
     chunkManager.Update(camera.position, renderer, perlin);
 
@@ -152,6 +183,10 @@ void BlockGame::OnImGuiRender() {
     std::ostringstream oss;
     oss << "Position: " << std::round(camera.position.x) << " " << std::round(camera.position.y) << " " << std::round(camera.position.z);
     ImGui::Text(oss.str().c_str());
+
+    std::ostringstream oss2;
+    oss2 << "Selected block: " << BlockTypeToString(selectedBlock);
+    ImGui::Text(oss2.str().c_str());
 }
 
 bool BlockGame::OnResize(Events::WindowResizeEvent& e) {

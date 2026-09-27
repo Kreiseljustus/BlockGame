@@ -17,7 +17,34 @@ constexpr int CHUNK_SIZE_Y = 64;
 constexpr int ATLAS_TILES_PER_ROW = 4;
 constexpr float ATLAS_TILE_SIZE = 1.0f / ATLAS_TILES_PER_ROW;
 
-enum class BlockType : uint8_t {Air, Stone, Dirt, Grass, Log, Leave, GrassPlant};
+enum class BlockType : uint8_t {Air = 0, Stone, Dirt, Grass, Log, Leave, GrassPlant};
+inline std::string BlockTypeToString(BlockType type) {
+    switch (type) {
+        case BlockType::Air:
+            return "Air";
+            break;
+        case BlockType::Stone:
+            return "Stone";
+            break;
+        case BlockType::Dirt:
+            return "Dirt";
+            break;
+        case BlockType::Grass:
+            return "Grass";
+            break;
+        case BlockType::Log:
+            return "Log";
+            break;
+        case BlockType::Leave:
+            return "Leaves";
+            break;
+        case BlockType::GrassPlant:
+            return "Grass Plant";
+            break;
+        default:
+            return "Unknown Block";
+    }
+}
 
 inline glm::ivec2 GetAtlasTile(const BlockType type) {
     switch (type) {
