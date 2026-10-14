@@ -3,7 +3,10 @@ Engine:
 Asset Banks
 Basic 2D Editor/Level Layout Software
 ECS
+
 Shader Abstraction
+- Define format
+
 Actual Model Loading API
 
 Define File Formats

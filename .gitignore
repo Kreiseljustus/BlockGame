@@ -1,3 +1,6 @@
 .idea
 *.bkp
 *.dtmp
+out
+bin
+.vs
