@@ -13,7 +13,6 @@
 #include "Rendering/Backends/OpenGLBackend.h"
 #include "VoxelRaycast.h"
 
-
 std::vector<Transform> fillUp(Transform t) {
     constexpr int worldBottom= -64;
 

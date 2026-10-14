@@ -1,0 +1,9 @@
+//
+// Created by Kreiseljustus on 10/14/2026.
+//
+
+#ifndef BLOCKGAME_BASICCOMPONENTS_H
+#define BLOCKGAME_BASICCOMPONENTS_H
+
+
+#endif //BLOCKGAME_BASICCOMPONENTS_H

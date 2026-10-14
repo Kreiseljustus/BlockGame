@@ -41,7 +41,6 @@ target_link_libraries(Engine PUBLIC
         imgui
         Jolt
         miniaudio
-        entt
 )
 
 if(WIN32)

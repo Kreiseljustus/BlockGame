@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.30)
 project(BlockGame LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -37,13 +37,6 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
-
-# --- ENTT (ECS) ---
-FetchContent_Declare(
-    entt
-    GIT_REPOSITORY https://github.com/skypjack/entt.git
-    GIT_TAG v3.13.2
-)
 
 # --- GLEW (OpenGL function loading) ---
 FetchContent_Declare(
