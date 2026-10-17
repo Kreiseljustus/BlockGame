@@ -88,11 +88,14 @@ void Application::Run() {
                 layer->OnUpdate(deltaTime);
             }
 
-            m_ImGuiLayer->Begin();
+            m_ActiveScene->OnUpdate(deltaTime);
+
+            ImGuiLayer::Begin();
             for (Layer* layer : m_LayerStack) {
+                layer->OnRender();
                 layer->OnImGuiRender();
             }
-            m_ImGuiLayer->End();
+            ImGuiLayer::End();
 
             glfwSwapBuffers(m_Window->getWindow());
         }

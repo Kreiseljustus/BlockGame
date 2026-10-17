@@ -2,7 +2,11 @@ Engine:
 
 Asset Banks
 Basic 2D Editor/Level Layout Software
+
 ECS
+- Add Scene Switch
+- Add Engine Systems
+- Add OnRender to Layers
 
 Shader Abstraction
 - Define format

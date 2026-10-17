@@ -13,6 +13,8 @@
 #include "Rendering/Backends/OpenGLBackend.h"
 #include "VoxelRaycast.h"
 
+#include "ECS/Scene.h"
+
 std::vector<Transform> fillUp(Transform t) {
     constexpr int worldBottom= -64;
 
@@ -153,8 +155,12 @@ void BlockGame::OnUpdate(const float deltaTime) {
     input->ConsumeMouseDelta();
 
     chunkManager.Update(camera.position, renderer, perlin);
+}
 
+void BlockGame::OnRender() {
     renderer.Begin(camera);
+
+    Application::Get().GetScene().OnRender(renderer);
 
     renderer.Submit(
         skyMesh,

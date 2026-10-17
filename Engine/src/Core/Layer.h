@@ -16,8 +16,8 @@ namespace Engine::Core {
         virtual void OnAttach() {}
         virtual void OnDetach() {}
         virtual void OnUpdate([[maybe_unused]] float deltaTime) {}
+        virtual void OnRender() {}
         virtual void OnImGuiRender() {}
-        //Soon
         virtual void OnEvent([[maybe_unused]] Event& event) {}
     };
 }

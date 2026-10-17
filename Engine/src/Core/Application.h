@@ -14,6 +14,7 @@
 
 #include "Core/Layer.h"
 #include "Event.h"
+#include "ECS/Scene.h"
 #include "Events/WindowEvent.h"
 #include "ImGui/ImGuiLayer.h"
 
@@ -36,6 +37,8 @@ namespace Engine::Core {
 
         [[nodiscard]] Window& GetWindow() const;
         bool OnWindowResize(Events::WindowResizeEvent& e);
+
+        Scene& GetScene() {return *m_ActiveScene;}
 
         void Close();
 
