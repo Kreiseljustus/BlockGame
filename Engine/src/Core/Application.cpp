@@ -88,7 +88,7 @@ void Application::Run() {
                 layer->OnUpdate(deltaTime);
             }
 
-            m_ActiveScene->OnUpdate(deltaTime);
+            m_SceneManager.OnUpdate(deltaTime);
 
             ImGuiLayer::Begin();
             for (Layer* layer : m_LayerStack) {

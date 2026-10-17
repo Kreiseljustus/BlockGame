@@ -14,9 +14,9 @@
 
 #include "Core/Layer.h"
 #include "Event.h"
-#include "ECS/Scene.h"
 #include "Events/WindowEvent.h"
 #include "ImGui/ImGuiLayer.h"
+#include "SceneManager.h"
 
 namespace Engine::Core {
 
@@ -38,7 +38,7 @@ namespace Engine::Core {
         [[nodiscard]] Window& GetWindow() const;
         bool OnWindowResize(Events::WindowResizeEvent& e);
 
-        Scene& GetScene() {return *m_ActiveScene;}
+        SceneManager& GetSceneManager() {return m_SceneManager;}
 
         void Close();
 
@@ -53,6 +53,8 @@ namespace Engine::Core {
         std::unique_ptr<Window> m_Window;
         std::vector<Layer*> m_LayerStack;
         ImGuiLayer* m_ImGuiLayer;
+
+        SceneManager m_SceneManager;
 
         bool m_Running = true;
         bool m_Minimized = false;

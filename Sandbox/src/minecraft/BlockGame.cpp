@@ -160,8 +160,6 @@ void BlockGame::OnUpdate(const float deltaTime) {
 void BlockGame::OnRender() {
     renderer.Begin(camera);
 
-    Application::Get().GetScene().OnRender(renderer);
-
     renderer.Submit(
         skyMesh,
         {sky_Shader_handle, skybox.handle, true},
@@ -173,6 +171,8 @@ void BlockGame::OnRender() {
     );
 
     chunkManager.Render(renderer, test_Shader_handle, tHandle);
+
+    Application::Get().GetSceneManager().OnRender(renderer);
     renderer.End();
 }
 

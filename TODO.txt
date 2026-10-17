@@ -3,6 +3,9 @@ Engine:
 Asset Banks
 Basic 2D Editor/Level Layout Software
 
+Architecture:
+- Move Renderer from Layers into Application Instance
+
 ECS
 - Add Scene Switch
 - Add Engine Systems
