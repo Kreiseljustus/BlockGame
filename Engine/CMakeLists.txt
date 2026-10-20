@@ -40,7 +40,6 @@ target_link_libraries(Engine PUBLIC
         assimp::assimp
         imgui
         Jolt
-        miniaudio
 )
 
 if(WIN32)

@@ -126,26 +126,12 @@ set(TARGET_PERFORMANCE_TEST OFF CACHE BOOL "" FORCE)
 set(TARGET_SAMPLES OFF CACHE BOOL "" FORCE)
 set(TARGET_VIEWER OFF CACHE BOOL "" FORCE)
 
-# --- miniaudio (audio playback -- header-only single file) ---
-FetchContent_Declare(
-        miniaudio
-        GIT_REPOSITORY https://github.com/mackron/miniaudio.git
-        GIT_TAG        0.11.21
-)
-
-FetchContent_MakeAvailable(glfw glew glm stb lua sol2 assimp imgui JoltPhysics miniaudio)
+FetchContent_MakeAvailable(glfw glew glm stb lua sol2 assimp imgui JoltPhysics)
 
 # stb is header-only with no CMakeLists.txt of its own; expose it as an
 # interface target so we can link against it like any other dependency.
 add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE ${stb_SOURCE_DIR})
-
-# miniaudio is header-only (single miniaudio.h with an implementation switch);
-# same INTERFACE-target pattern as stb. The actual MINIAUDIO_IMPLEMENTATION
-# define + #include happens in exactly one .cpp file inside Engine (see
-# Engine/CMakeLists.txt / the audio backend source) -- never define it here.
-add_library(miniaudio INTERFACE)
-target_include_directories(miniaudio INTERFACE ${miniaudio_SOURCE_DIR})
 
 # Dear ImGui has no build system of its own -- we build it as a static lib
 # here, with the GLFW + OpenGL3 backends (matching our window/graphics stack).
