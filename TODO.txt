@@ -19,4 +19,10 @@ Actual Model Loading API
 Define File Formats
 
 BlockGame:
+Refactor using ECS
 Add Block placing / destruction (requires raycasting / physics??)
+
+Ideas:
+- Hair simulation
+- Cloth simulation
+- Fire/Smoke simulation
