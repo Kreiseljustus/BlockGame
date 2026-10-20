@@ -18,6 +18,8 @@ Actual Model Loading API
 
 Define File Formats
 
+Fix build system for single file libs (headerLibs)
+
 BlockGame:
 Refactor using ECS
 Add Block placing / destruction (requires raycasting / physics??)

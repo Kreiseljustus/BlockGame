@@ -67,6 +67,9 @@ void BlockGame::OnAttach() {
 
     skyMesh = renderer.CreateMesh(GetUnitCube());
 
+    a_Player = new Audio::AudioPlayer();
+    bool b = a_Player->Load("assets/audio/test.mp3");
+
     glfwSwapInterval(0);
 }
 
@@ -89,6 +92,9 @@ void BlockGame::OnUpdate(const float deltaTime) {
     float camSpeed = 12.0f;
 
     if (input->IsKeyDown(GLFW_KEY_LEFT_SHIFT)) camSpeed *= 4;
+    if (input->IsKeyDown(GLFW_KEY_P)) a_Player->Play();
+    if (input->IsKeyDown(GLFW_KEY_UP)) a_Player->SetVolume(a_Player->GetVolume() + 0.01);
+    if (input->IsKeyDown(GLFW_KEY_DOWN)) a_Player->SetVolume(a_Player->GetVolume() - 0.01);
 
     glm::vec2 mouseDelta = input->ConsumeMouseDelta();
     camera.rotation.y -= mouseDelta.x * lookSensitivity; // yaw
@@ -192,6 +198,15 @@ void BlockGame::OnImGuiRender() {
     std::ostringstream oss2;
     oss2 << "Selected block: " << BlockTypeToString(selectedBlock);
     ImGui::Text(oss2.str().c_str());
+
+    std::ostringstream oss3;
+    oss3 << "Audio playtime: " << a_Player->GetElapsedTime();
+    ImGui::Text(oss3.str().c_str());
+    oss3.str("");
+    oss3.clear();
+
+    oss3 << "Volume: " << a_Player->GetVolume();
+    ImGui::Text(oss3.str().c_str());
 }
 
 bool BlockGame::OnResize(Events::WindowResizeEvent& e) {

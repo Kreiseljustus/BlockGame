@@ -14,6 +14,9 @@
 #include "Rendering/RenderData.h"
 #include "Rendering/Renderer.h"
 
+#include "Audio/AudioPlayer.h"
+
+
 using namespace Engine;
 using namespace Engine::Core;
 using namespace Engine::Rendering;
@@ -53,6 +56,7 @@ private:
     bool showCursor;
 
     BlockType selectedBlock;
+    Audio::AudioPlayer* a_Player;
 
     const siv::PerlinNoise::seed_type seed = 12345;
     const siv::PerlinNoise perlin{seed};
