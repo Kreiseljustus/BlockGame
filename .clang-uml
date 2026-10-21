@@ -1,5 +1,13 @@
+
 compilation_database_dir: cmake-build-debug
 output_directory: diagrams
+
+remove_compile_flags:
+  - r: '-fmodule-mapper=.*'
+  - r: '-fdeps-format=.*'
+  - '-fmodules-ts'
+  - '-Wmaybe-uninitialized'
+
 diagrams:
   engine_class:
     type: class
@@ -10,4 +18,4 @@ diagrams:
         - Engine
     plantuml:
       after:
-        - "note top of {{ alias(\"Engine::Rendering::Renderer\") }}: Core renderer"
+        - 'note top of {{ alias("Engine::Rendering::Renderer") }}: Core renderer'

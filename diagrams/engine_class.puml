@@ -1,4 +1,262 @@
 @startuml
+class "Engine::Audio::AudioPlayer" as C_0013350505489159809378
+class C_0013350505489159809378 {
++AudioPlayer() : void
++AudioPlayer(const AudioPlayer &) = deleted : void
++~AudioPlayer() : void
+..
++operator=(const AudioPlayer &) = deleted : AudioPlayer &
+..
+{static} -Callback(ma_device * device, void * out, const void * in, uint32_t frames) : void
++GetElapsedTime() const : double
++GetLatestSamples(float * out, size_t count) const : void
++GetVolume() const : float
++IsLoaded() const : bool
++Load(const std::string & path) : bool
++Pause() const : void
++Play() const : void
++SetLooping(bool loop) : void
++SetVolume(float volume) : void
+-Unload() : void
+__
+{static} -kRingMask : const size_t
+{static} -kRingSize : const size_t
+{static} -kSampleRate : const uint32_t
+-m_Decoder : ma_decoder *
+-m_Device : ma_device *
+-m_Loaded : bool
+-m_Looping : std::atomic<bool>
+-m_Position : std::atomic<uint64_t>
+-m_Recent : std::array<float,kRingSize>
+-m_Volume : std::atomic<float>
+-m_Written : std::atomic<uint64_t>
+}
+enum "Engine::Core::EventType" as C_0000974141713200789180
+enum C_0000974141713200789180 {
+WindowResize
+WindowClose
+KeyPressed
+KeyReleased
+MouseMoved
+MouseButtonPressed
+MouseButtonReleased
+MouseScrolled
+}
+abstract "Engine::Core::Event" as C_0003177471639663011060
+abstract C_0003177471639663011060 {
++~Event() constexpr = default : void
+..
+{abstract} +GetType() const = 0 : EventType
+__
++Handled : bool
+}
+class "Engine::Core::EventDispatcher" as C_0005084250515538059969
+class C_0005084250515538059969 {
++EventDispatcher(Event & event) : void
+..
++Dispatch<T,Func>(Func func) : _Bool
+__
+-m_Event : Event &
+}
+class "Engine::Core::Layer" as C_0016580298286036785561
+class C_0016580298286036785561 {
++Layer() : void
++~Layer() constexpr = default : void
+..
++OnAttach() : void
++OnDetach() : void
++OnEvent(Event & event) : void
++OnImGuiRender() : void
++OnRender() : void
++OnUpdate(float deltaTime) : void
+__
+}
+class "Engine::Core::SceneManager" as C_0015566525053935297803
+class C_0015566525053935297803 {
++GetActiveScene() const : Scene &
++HasActiveScene() const : bool
++LoadScene<T,Args...>(Args &&... args) : void
++OnRender(Rendering::Renderer & renderer) const : void
++OnUpdate(float dt) : void
+__
+-m_Active : std::unique_ptr<Scene>
+-m_Pending : std::unique_ptr<Scene>
+}
+class "Engine::Core::ApplicationSpecification" as C_0005953525068704361995
+class C_0005953525068704361995 {
+__
++Name : std::string
++WorkingDirectory : std::string
+}
+class "Engine::Core::Application" as C_0008757026392156646978
+class C_0008757026392156646978 {
++Application(const ApplicationSpecification & specs) : void
++~Application() : void
+..
++Close() : void
+{static} +Get() : Application &
++GetInput() : Input *
++GetSceneManager() : SceneManager &
++GetWindow() const : Window &
++OnEvent(Event & event) : void
++OnWindowResize(Events::WindowResizeEvent & e) : bool
++PushLayer(Layer * layer) : void
++Run() : void
+__
+-input : Input
+-m_ImGuiLayer : ImGuiLayer *
+-m_LastFrameTime : double
+-m_LayerStack : std::vector<Layer *>
+-m_Minimized : bool
+-m_Running : bool
+-m_SceneManager : SceneManager
+-m_Specs : ApplicationSpecification
+-m_Window : std::unique_ptr<Window>
+{static} -s_Instance : Application *
+}
+class "Engine::Events::KeyPressedEvent" as C_0018300926958466167571
+class C_0018300926958466167571 {
++KeyPressedEvent(const int key) : void
+..
+{static} +GetStaticType() : Core::EventType
++GetType() const : Core::EventType
+__
++Key : int
+}
+class "Engine::Events::KeyReleasedEvent" as C_0006071233911068872966
+class C_0006071233911068872966 {
++KeyReleasedEvent(const int key) : void
+..
+{static} +GetStaticType() : Core::EventType
++GetType() const : Core::EventType
+__
++Key : int
+}
+class "Engine::Events::MouseMovedEvent" as C_0017820809472549169412
+class C_0017820809472549169412 {
++MouseMovedEvent(const double x, const double y) : void
+..
+{static} +GetStaticType() : Core::EventType
++GetType() const : Core::EventType
+__
++X : double
++Y : double
+}
+class "Engine::Events::MouseScrolledEvent" as C_0001385619232433421867
+class C_0001385619232433421867 {
++MouseScrolledEvent(const double xOffset, const double yOffset) : void
+..
+{static} +GetStaticType() : Core::EventType
++GetType() const : Core::EventType
+__
++XOffset : double
++YOffset : double
+}
+class "Engine::Events::MouseButtonPressedEvent" as C_0010716952580484279439
+class C_0010716952580484279439 {
++MouseButtonPressedEvent(const int button) : void
+..
+{static} +GetStaticType() : Core::EventType
++GetType() const : Core::EventType
+__
++Button : int
+}
+class "Engine::Events::MouseButtonReleasedEvent" as C_0016166212123390823242
+class C_0016166212123390823242 {
++MouseButtonReleasedEvent(const int button) : void
+..
+{static} +GetStaticType() : Core::EventType
++GetType() const : Core::EventType
+__
++Button : int
+}
+class "Engine::Events::WindowResizeEvent" as C_0006913285859267186654
+class C_0006913285859267186654 {
++WindowResizeEvent(const int width, const int height) : void
+..
+{static} +GetStaticType() : Core::EventType
++GetType() const : Core::EventType
+__
++Height : int
++Width : int
+}
+class "Engine::Events::WindowCloseEvent" as C_0007403150829985860950
+class C_0007403150829985860950 {
++WindowCloseEvent() = default : void
+..
+{static} +GetStaticType() : Core::EventType
++GetType() const : Core::EventType
+__
+}
+class "Engine::Input" as C_0004854023634127342073
+class C_0004854023634127342073 {
++ConsumeMouseDelta() : glm::vec2
++IsKeyDown(const int key) const : bool
++IsMouseButtonDown(const int button) const : bool
++OnEvent(Core::Event & event) : void
+-OnKeyPressed(const Events::KeyPressedEvent & e) : void
+-OnKeyReleased(const Events::KeyReleasedEvent & e) : void
+-OnMouseButtonPressed(const Events::MouseButtonPressedEvent & e) : void
+-OnMouseButtonReleased(const Events::MouseButtonReleasedEvent & e) : void
+-OnMouseMoved(const Events::MouseMovedEvent & e) : void
+__
+-m_FirstMouseSample : bool
+-m_KeyState : std::unordered_map<int,bool>
+-m_LastMousePos : glm::vec2
+-m_MouseButtonState : std::unordered_map<int,bool>
+-m_MouseDelta : glm::vec2
+}
+class "Engine::WindowProperties" as C_0009059241334153805290
+class C_0009059241334153805290 {
+__
++CreateOpenGLContext : bool
++Height : int
++Hidden : bool
++Title : std::string
++Width : int
+}
+class "Engine::Window" as C_0015583390122797847347
+class C_0015583390122797847347 {
++Window(const WindowProperties & properties) : void
++~Window() : void
+..
++SetEventCallback(const EventCallbackFun & callback) : void
++create() : void
++destroy() : void
++getFrameBufferSize() const : Vector2I
++getWindow() const : GLFWwindow *
++isHidden() const : bool
++setHidden(const bool hidden) : void
++shouldClose() const : bool
+__
+-m_CreateOpenGLContext : bool
+-m_EventCallback : EventCallbackFun
+-m_Height : int
+-m_Hidden : bool
+-m_Title : std::string
+-m_Width : int
+-m_Window : GLFWwindow *
+}
+class "Engine::ImGuiLayer" as C_0015781380871212875297
+class C_0015781380871212875297 {
++ImGuiLayer() : void
++~ImGuiLayer() constexpr = default : void
+..
+{static} +Begin() : void
+{static} +End() : void
++OnAttach() : void
++OnDetach() : void
++OnEvent(Core::Event & event) : void
+__
+}
+abstract "Engine::ISystem" as C_0008267667536364920391
+abstract C_0008267667536364920391 {
++~ISystem() constexpr = default : void
+..
++OnAttach(Scene &) : void
+{abstract} +OnUpdate(Scene & scene, float dt) = 0 : void
+__
+}
 enum "Engine::Rendering::ProjectionType" as C_0002886508483453525476
 enum C_0002886508483453525476 {
 Perspective
@@ -27,6 +285,7 @@ enum "Engine::Rendering::TextureWrapping" as C_0010363620148178811796
 enum C_0010363620148178811796 {
 CLAMP
 REPEAT
+CLAMP_TO_EDGE
 }
 enum "Engine::Rendering::TextureFilter" as C_0003525605754001707130
 enum C_0003525605754001707130 {
@@ -36,6 +295,7 @@ LINEAR
 class "Engine::Rendering::TextureParameters" as C_0001453495524692948524
 class C_0001453495524692948524 {
 __
++cubemapFaces : std::array<unsigned char *,6>
 +dataType : int
 +filter : TextureFilter
 +format : int
@@ -54,7 +314,8 @@ __
 class "Engine::Rendering::MeshHandle" as C_0006118082789509841398
 class C_0006118082789509841398 {
 __
-+handle : uint32_t
++backendID : uint32_t
++generation : uint32_t
 }
 class "Engine::Rendering::TextureHandle" as C_0007030359361171487998
 class C_0007030359361171487998 {
@@ -75,8 +336,9 @@ __
 class "Engine::Rendering::Material" as C_0012107896584944840788
 class C_0012107896584944840788 {
 __
-+shaderHandle : uint32_t
-+textureHandle : uint32_t
++disableDepth : bool
++shaderHandle : ShaderHandle
++textureHandle : TextureHandle
 }
 class "Engine::Rendering::Vertex" as C_0003528917884515404651
 class C_0003528917884515404651 {
@@ -110,16 +372,18 @@ TRIANGLES
 }
 abstract "Engine::Rendering::IRenderBackend" as C_0014930216693717519272
 abstract C_0014930216693717519272 {
-+~IRenderBackend() = default : void
++~IRenderBackend() constexpr = default : void
 ..
 {abstract} +Begin() = 0 : void
 {abstract} +CreateMesh(const MeshData & data) = 0 : MeshHandle
 {abstract} +CreateShader(const ShaderParameters & parameters) = 0 : ShaderHandle
 {abstract} +CreateTexture(const TextureParameters & parameters) = 0 : TextureHandle
+{abstract} +DestroyMesh(MeshHandle handle) = 0 : void
 {abstract} +Draw(MeshHandle, Material, Transform) = 0 : void
 {abstract} +DrawDynamicBuffer(void * vertexData, int count, PrimitiveType type) = 0 : void
 {abstract} +End() = 0 : void
 {abstract} +SetViewProjection(const glm::mat4 & view, const glm::mat4 & proj) = 0 : void
+{abstract} +UpdateMesh(MeshHandle handle, const MeshData & data) = 0 : void
 {abstract} +UpdateTexture(TextureHandle handle, const void * pixelData) = 0 : void
 __
 }
@@ -138,38 +402,47 @@ class C_0008709012175416383034 {
 +CreateMesh(const MeshData & data) const : MeshHandle
 +CreateShader(const ShaderParameters & parameters) const : ShaderHandle
 +CreateTexture(const TextureParameters & parameters) const : TextureHandle
++DestroyMesh(MeshHandle handle) const : void
 +DrawLine(glm::vec3 a, glm::vec3 b, Color color) const : void
 +End() : void
 -Flush() : void
-+Submit(MeshHandle mesh, Material material, Transform transform) : void
++Submit(MeshHandle mesh, Material material, const Transform & transform) : void
 +SwitchBackend(std::unique_ptr<IRenderBackend> render_backend) : void
++UpdateMesh(MeshHandle handle, const MeshData & data) const : void
++UpdateTexture(const TextureHandle handle, const void * pixelData) const : void
 __
 -m_DrawCommands : std::vector<DrawCommand>
 -m_RenderBackend : std::unique_ptr<IRenderBackend>
 }
 class "Engine::Rendering::OpenGLBackend" as C_0003176479576331291714
 class C_0003176479576331291714 {
-+OpenGLBackend() = default : void
++OpenGLBackend() : void
 ..
 +Begin() : void
 +CreateMesh(const MeshData & data) : MeshHandle
 +CreateShader(const ShaderParameters & parameters) : ShaderHandle
 +CreateTexture(const TextureParameters & parameters) : TextureHandle
++DestroyMesh(MeshHandle handle) : void
 +Draw(MeshHandle, Material, Transform) : void
 +DrawDynamicBuffer(void * vertexData, int count, PrimitiveType type) : void
 +End() : void
 +SetViewProjection(const glm::mat4 & view, const glm::mat4 & proj) : void
++UpdateMesh(MeshHandle handle, const MeshData & data) : void
 +UpdateTexture(TextureHandle handle, const void * pixelData) : void
 __
+-m_FreeMeshSlots : std::vector<uint32_t>
 -m_Meshes : std::vector<GPUMesh>
 -m_Proj : glm::mat4
+-m_ShadersUpdatedCurrentFrame : std::unordered_set<GLuint>
 -m_Textures : std::vector<GPUTexture>
 -m_View : glm::mat4
 }
 class "Engine::Rendering::OpenGLBackend::GPUMesh" as C_0001409581089314370311
 class C_0001409581089314370311 {
 __
++alive : bool
 +ebo : GLuint
++generation : uint32_t
 +indexCount : uint32_t
 +vao : GLuint
 +vbo : GLuint
@@ -180,6 +453,7 @@ __
 +format : GLenum
 +height : int
 +id : GLuint
++type : GLenum
 +width : int
 }
 enum "Engine::Rendering::ShaderType" as C_0002605511711409615476
@@ -190,79 +464,156 @@ GEOMETRY_SHADER
 }
 class "Engine::Rendering::Shader" as C_0015528236679527193724
 class C_0015528236679527193724 {
-+bind() : void
--compileShader(const std::string & src, ShaderType type) : unsigned int
-+id() : unsigned int
--linkShaderProgram(unsigned int vertexShader, unsigned int fragmentShader) : unsigned int
++Shader() = default : void
++Shader(const Shader &) = deleted : void
++Shader(Shader && other) noexcept : void
++~Shader() : void
+..
++operator=(const Shader &) = deleted : Shader &
++operator=(Shader && other) noexcept : Shader &
+..
++bind() const : void
+{static} -compileShader(const std::string & src, ShaderType type) : unsigned int
++id() const : unsigned int
+{static} -linkShaderProgram(unsigned int vertexShader, unsigned int fragmentShader) : unsigned int
 +load(const std::filesystem::path & vertexShader, const std::filesystem::path & fragmentShader) : bool
--loadFromFile(const std::filesystem::path & path, ShaderType * typeOut, std::string * sourceOut) : void
+{static} -loadFromFile(const std::filesystem::path & path, ShaderType * typeOut, std::string * sourceOut) : void
 __
 -m_ShaderProgramID : unsigned int
 }
-class "Engine::Input" as C_0004854023634127342073
-class C_0004854023634127342073 {
-+IsKeyDown(int key) const : bool
-+handleKey(int key, int scancode, int action, int mods) : void
-+handleResize(int width, int height) : void
-{static} +keyCallback(GLFWwindow * window, const int key, const int scancode, const int action, const int mods) : void
-{static} +resizeCallback(GLFWwindow * window, const int width, const int height) : void
+class "Engine::Scene" as C_0011419862619212672265
+class C_0011419862619212672265 {
++Scene() = default : void
++Scene(const Scene &) = deleted : void
++~Scene() = default : void
+..
++operator=(const Scene &) = deleted : Scene &
+..
++AddSystem<T,Args...>(Args &&... args) : T &
++CreateGameObject(const std::string & name = "new GameObject") : GameObject
++DestroyGameObject(GameObject o) : void
++Events() : entt::dispatcher &
+#OnLoad() : void
++OnRender(Rendering::Renderer & renderer) : void
+#OnUnload() : void
++OnUpdate(float dt) : void
++Registry() : entt::registry &
 __
--m_KeyState : std::unordered_map<int,bool>
+-m_Dispatcher : entt::dispatcher
+-m_Registry : entt::registry
+-m_Systems : std::vector<std::unique_ptr<ISystem>>
+}
+class "Engine::GameObject" as C_0004052905939010430182
+class C_0004052905939010430182 {
++GameObject() = default : void
++GameObject(entt::entity e, Scene * scene) : void
+..
++operator==(const GameObject & o) const : bool
+..
++AddComponent<T,Args...>(Args &&... args) : T &
++GetComponent<T>() : T &
++HasComponent<T>() const : _Bool
++IsValid() const : bool
++RemoveComponent<T>() const : void
++operator bool() const : bool
+__
+-m_Entity : entt::entity
+-m_Scene : Scene *
+}
+class "Engine::Components::TagComponent" as C_0006776147712364153056
+class C_0006776147712364153056 {
+__
++name : std::string
+}
+class "Engine::Components::MeshRendererComponent" as C_0002897210102336660716
+class C_0002897210102336660716 {
+__
++material : Material
++mesh : MeshHandle
+}
+class "Engine::Components::AudioSourceComponent" as C_0015818415604540160093
+class C_0015818415604540160093 {
++GetLatestSamples(float * out, const size_t n) const : void
++GetTime() const : double
++Load(const std::string & path) const : bool
++Pause() const : void
++Play() const : void
++SetLooping(const bool loop) const : void
++SetVolume(const float v) const : void
+__
++player : std::unique_ptr<Audio::AudioPlayer>
 }
 class "Engine::ResourceManager" as C_0008927138634359313678
 class C_0008927138634359313678 {
-{static} +GetMesh(std::string alias) : Rendering::MeshData
-{static} +GetShader(std::string alias) : Rendering::ShaderHandle
-{static} +LoadMesh(std::filesystem::path meshFile, std::string alias) : Rendering::MeshData
-{static} +LoadShader(std::filesystem::path vertex, const std::filesystem::path & fragment, const std::string & alias) : Rendering::ShaderHandle
+{static} +GetMesh(const std::string & alias) : Rendering::MeshData
+{static} +GetShader(const std::string & alias) : Rendering::ShaderHandle
+{static} +GetTexture(const std::string & alias) : Rendering::TextureParameters &
+{static} +LoadMesh(const std::filesystem::path & meshFile, std::string alias) : Rendering::MeshData
+{static} +LoadShader(const std::filesystem::path & vertex, const std::filesystem::path & fragment, std::string alias) : Rendering::ShaderHandle
+{static} +LoadTexture(Rendering::TextureParameters & tParams, const std::filesystem::path & texturePath, std::string alias) : Rendering::TextureParameters
 __
 {static} -s_Meshes : std::unordered_map<std::string,Rendering::MeshData>
 {static} -s_Shaders : std::unordered_map<std::string,Rendering::Shader>
+{static} -s_Textures : std::unordered_map<std::string,Rendering::TextureParameters>
 }
-class "Engine::WindowProperties" as C_0009059241334153805290
-class C_0009059241334153805290 {
-__
-+height : int
-+hidden : bool
-+title : std::string
-+width : int
-}
-class "Engine::Window" as C_0015583390122797847347
-class C_0015583390122797847347 {
-+Window(const WindowProperties & properties) : void
-+~Window() : void
-..
-+create() : void
-+destroy() : void
-+getFrameBufferSize() const : Vector2I
-+getWindow() const : GLFWwindow *
-+isHidden() const : bool
-+setHidden(const bool hidden) : void
-+setInputHandler(Input * input) const : void
-+setKeyCallback(GLFWkeyfun callback) const : void
-+setResizeCallback(GLFWframebuffersizefun callback) const : void
-+shouldClose() const : bool
-__
--m_Height : int
--m_Hidden : bool
--m_Title : std::string
--m_Width : int
--m_Window : GLFWwindow *
-}
+C_0003177471639663011060 ..> C_0000974141713200789180
+C_0005084250515538059969 --> C_0003177471639663011060 : -m_Event
+C_0016580298286036785561 ..> C_0003177471639663011060
+C_0015566525053935297803 ..> C_0008709012175416383034
+C_0015566525053935297803 o-- C_0011419862619212672265 : -m_Active
+C_0015566525053935297803 o-- C_0011419862619212672265 : -m_Pending
+C_0008757026392156646978 ..> C_0003177471639663011060
+C_0008757026392156646978 ..> C_0006913285859267186654
+C_0008757026392156646978 o-- C_0004854023634127342073 : -input
+C_0008757026392156646978 o-- C_0005953525068704361995 : -m_Specs
+C_0008757026392156646978 o-- C_0015583390122797847347 : -m_Window
+C_0008757026392156646978 --> C_0016580298286036785561 : -m_LayerStack
+C_0008757026392156646978 --> C_0015781380871212875297 : -m_ImGuiLayer
+C_0008757026392156646978 o-- C_0015566525053935297803 : -m_SceneManager
+C_0008757026392156646978 --> C_0008757026392156646978 : -s_Instance
+C_0018300926958466167571 ..> C_0000974141713200789180
+C_0003177471639663011060 <|-- C_0018300926958466167571
+C_0006071233911068872966 ..> C_0000974141713200789180
+C_0003177471639663011060 <|-- C_0006071233911068872966
+C_0017820809472549169412 ..> C_0000974141713200789180
+C_0003177471639663011060 <|-- C_0017820809472549169412
+C_0001385619232433421867 ..> C_0000974141713200789180
+C_0003177471639663011060 <|-- C_0001385619232433421867
+C_0010716952580484279439 ..> C_0000974141713200789180
+C_0003177471639663011060 <|-- C_0010716952580484279439
+C_0016166212123390823242 ..> C_0000974141713200789180
+C_0003177471639663011060 <|-- C_0016166212123390823242
+C_0006913285859267186654 ..> C_0000974141713200789180
+C_0003177471639663011060 <|-- C_0006913285859267186654
+C_0007403150829985860950 ..> C_0000974141713200789180
+C_0003177471639663011060 <|-- C_0007403150829985860950
+C_0004854023634127342073 ..> C_0003177471639663011060
+C_0004854023634127342073 ..> C_0018300926958466167571
+C_0004854023634127342073 ..> C_0006071233911068872966
+C_0004854023634127342073 ..> C_0010716952580484279439
+C_0004854023634127342073 ..> C_0016166212123390823242
+C_0004854023634127342073 ..> C_0017820809472549169412
+C_0015583390122797847347 ..> C_0009059241334153805290
+C_0015583390122797847347 --> C_0003177471639663011060 : -m_EventCallback
+C_0015781380871212875297 ..> C_0003177471639663011060
+C_0016580298286036785561 <|-- C_0015781380871212875297
+C_0008267667536364920391 ..> C_0011419862619212672265
 C_0003719779346828084050 o-- C_0002886508483453525476 : +projection
 C_0001453495524692948524 o-- C_0002502947422070324512 : +type
 C_0001453495524692948524 o-- C_0010363620148178811796 : +wrapping
 C_0001453495524692948524 o-- C_0003525605754001707130 : +filter
 C_0002241518764200002280 o-- C_0001453495524692948524 : +params
 C_0002241518764200002280 o-- C_0007030359361171487998 : +tHandle
+C_0012107896584944840788 o-- C_0016796369416382387538 : +shaderHandle
+C_0012107896584944840788 o-- C_0007030359361171487998 : +textureHandle
 C_0000029884656832645208 o-- C_0003528917884515404651 : +vertices
 C_0014930216693717519272 ..> C_0006118082789509841398
 C_0014930216693717519272 ..> C_0012107896584944840788
 C_0014930216693717519272 ..> C_0018080581493981655007
 C_0014930216693717519272 ..> C_0016634995672523198866
-C_0014930216693717519272 ..> C_0007030359361171487998
 C_0014930216693717519272 ..> C_0000029884656832645208
 C_0014930216693717519272 ..> C_0001453495524692948524
+C_0014930216693717519272 ..> C_0007030359361171487998
 C_0014930216693717519272 ..> C_0005719490843958547504
 C_0014930216693717519272 ..> C_0016796369416382387538
 C_0007062862532344881460 o-- C_0006118082789509841398 : +mesh
@@ -293,11 +644,19 @@ C_0014930216693717519272 <|-- C_0003176479576331291714
 C_0001409581089314370311 --+ C_0003176479576331291714
 C_0015874896612330852033 --+ C_0003176479576331291714
 C_0015528236679527193724 ..> C_0002605511711409615476
+C_0011419862619212672265 ..> C_0008709012175416383034
+C_0011419862619212672265 o-- C_0008267667536364920391 : -m_Systems
+C_0011419862619212672265 <.. C_0015566525053935297803 : +<<friend>>
+C_0011419862619212672265 <.. C_0004052905939010430182 : +<<friend>>
+C_0004052905939010430182 --> C_0011419862619212672265 : -m_Scene
+C_0004052905939010430182 <.. C_0011419862619212672265 : +<<friend>>
+C_0002897210102336660716 o-- C_0006118082789509841398 : +mesh
+C_0002897210102336660716 o-- C_0012107896584944840788 : +material
+C_0015818415604540160093 o-- C_0013350505489159809378 : +player
 C_0008927138634359313678 ..> C_0016796369416382387538
 C_0008927138634359313678 --> C_0015528236679527193724 : -s_Shaders
+C_0008927138634359313678 --> C_0001453495524692948524 : -s_Textures
 C_0008927138634359313678 --> C_0000029884656832645208 : -s_Meshes
-C_0015583390122797847347 ..> C_0009059241334153805290
-C_0015583390122797847347 ..> C_0004854023634127342073
 note top of C_0008709012175416383034: Core renderer
 
 'Generated with clang-uml, version 0.6.3

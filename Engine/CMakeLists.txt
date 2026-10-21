@@ -22,6 +22,10 @@ target_include_directories(Engine PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+target_include_directories(Engine SYSTEM PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/headerLibs
+)
+
 # Required since we're statically linking GLEW (glew-cmake_BUILD_STATIC=ON
 # in the top-level CMakeLists.txt) -- without this define, GLEW's headers
 # assume dynamic linking, which can cause inconsistent/garbage state at
