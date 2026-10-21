@@ -28,6 +28,9 @@ namespace Engine {
             sys->OnUpdate(*this, dt);
         }
         m_Dispatcher.update();
+
+        //After all ecs systems ran the scenes get control, not sure if this is good or not will see
+        OnSceneUpdate();
     }
 
     void Scene::OnRender(Rendering::Renderer &renderer) {
