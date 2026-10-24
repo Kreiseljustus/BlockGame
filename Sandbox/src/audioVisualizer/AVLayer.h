@@ -27,6 +27,7 @@ private:
     Renderer m_Renderer;
     Window m_Window;
     Camera m_Camera;
+    Input* input;
 };
 
 

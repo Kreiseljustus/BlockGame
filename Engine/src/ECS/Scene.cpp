@@ -9,6 +9,8 @@
 #include "../Rendering/RenderData.h"
 
 namespace Engine {
+    Scene::Scene(Rendering::Renderer &) {
+    }
 
     GameObject Scene::CreateGameObject(const std::string &name) {
         GameObject go{m_Registry.create(), this};

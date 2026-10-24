@@ -18,7 +18,7 @@ namespace Engine {
 
     class Scene {
     public:
-        Scene() = default;
+        Scene(Rendering::Renderer&);
         virtual ~Scene() = default;
         Scene(const Scene&) = delete;
         Scene& operator=(const Scene&) = delete;
