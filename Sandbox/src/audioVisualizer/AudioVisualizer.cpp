@@ -37,8 +37,7 @@ void AudioVisualizer::OnSceneUpdate() {
 }
 
 void AudioVisualizer::OnLoad() {
-
-    m_Cube = renderer->CreateMesh(GetUnitCube());
+    m_Cube = renderer->CreateMesh(GetUnitCubeCCW());
     Engine::Rendering::ShaderHandle a = Engine::ResourceManager::LoadShader("assets/shaders/BasicVertexShader.glsl", "assets/shaders/BasicFragmentShader.glsl", "basic");
     Engine::Rendering::TextureParameters c = Engine::Rendering::TextureParameters();
     Engine::ResourceManager::LoadTexture(c, "assets/textures/dirt.png", "b");
@@ -49,7 +48,7 @@ void AudioVisualizer::OnLoad() {
 
     m_Music = CreateGameObject();
     auto& audioComponent = m_Music.AddComponent<Engine::Components::AudioSourceComponent>();
-    bool sucess = audioComponent.Load("assets/audio/know.mp3");
+    bool sucess = audioComponent.Load("assets/audio/test.mp3");
     std::cout << "Successfully loaded? " << sucess << std::endl;
     audioComponent.SetVolume(0.1f);
     audioComponent.SetLooping(true);
@@ -62,4 +61,11 @@ void AudioVisualizer::OnLoad() {
         bar.AddComponent<Engine::Components::MeshRendererComponent>(m_Cube, m_Material);
         m_AudioBars.push_back(bar);
     }
+
+    m_Camera = CreateGameObject();
+    auto& cameraComponent = m_Camera.AddComponent<Engine::Components::CameraComponent>();
+    cameraComponent.primary = true;
+    cameraComponent.fov = 90;
+
+    m_Camera.GetComponent<Engine::Rendering::Transform>().position = {0,2, 20};
 }

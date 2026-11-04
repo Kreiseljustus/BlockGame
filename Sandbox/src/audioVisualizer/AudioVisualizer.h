@@ -16,10 +16,10 @@ public:
     void OnRenderImGui();
 protected:
     void OnSceneUpdate() override;
-    //TODO: remove this Renderer for resource creation
     void OnLoad() override;
 private:
     Engine::GameObject m_Music;
+    Engine::GameObject m_Camera;
     Analyzer m_Analyzer;
 
     Engine::Rendering::MeshHandle m_Cube;

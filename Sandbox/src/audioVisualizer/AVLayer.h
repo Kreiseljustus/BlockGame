@@ -24,9 +24,7 @@ public:
     void OnImGuiRender() override;
 private:
     Application* m_App;
-    Renderer m_Renderer;
     Window m_Window;
-    Camera m_Camera;
     Input* input;
 };
 

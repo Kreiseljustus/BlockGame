@@ -12,6 +12,25 @@ namespace Engine {
     Scene::Scene(Rendering::Renderer &) {
     }
 
+    std::optional<Rendering::Camera> Scene::GetPrimaryCamera(float aspect) {
+        auto view = m_Registry.view<Rendering::Transform, Components::CameraComponent>();
+        for (auto [entity, transform, camera] : view.each()) {
+            if (!camera.primary) continue;
+            Rendering::Camera cam;
+            cam.projection = camera.type;
+            cam.position = transform.position;
+            cam.rotation = transform.rotation;
+            cam.fov = camera.fov;
+            cam.nearPlane = camera.nearPlane;
+            cam.farPlane = camera.farPlane;
+            cam.orthoSize = 1;
+            cam.aspect = aspect;
+            return cam;
+        }
+
+        return std::nullopt;
+    }
+
     GameObject Scene::CreateGameObject(const std::string &name) {
         GameObject go{m_Registry.create(), this};
         go.AddComponent<Components::TagComponent>(name);

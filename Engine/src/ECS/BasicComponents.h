@@ -24,6 +24,12 @@ namespace Engine::Components {
         Material material;
     };
 
+    struct CameraComponent {
+        ProjectionType type = ProjectionType::Perspective;
+        float fov = 70.0f, nearPlane = 0.1f, farPlane = 500.0f;
+        bool primary = true;
+    };
+
     struct AudioSourceComponent {
         std::unique_ptr<Audio::AudioPlayer> player = std::make_unique<Audio::AudioPlayer>();
 

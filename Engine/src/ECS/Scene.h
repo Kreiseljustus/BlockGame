@@ -20,6 +20,9 @@ namespace Engine {
     public:
         Scene(Rendering::Renderer&);
         virtual ~Scene() = default;
+
+        std::optional<Rendering::Camera> GetPrimaryCamera(float aspect);
+
         Scene(const Scene&) = delete;
         Scene& operator=(const Scene&) = delete;
 

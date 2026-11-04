@@ -5,8 +5,10 @@
 #include "Application.h"
 
 #include <filesystem>
+#include <ranges>
 
 #include "Events/WindowEvent.h"
+#include "Rendering/Backends/OpenGLBackend.h"
 
 using namespace Engine::Core;
 
@@ -29,6 +31,8 @@ Application::Application(const ApplicationSpecification& specs) : m_Specs(specs)
 
     m_ImGuiLayer = new ImGuiLayer();
     PushLayer(m_ImGuiLayer);
+
+    m_Renderer = std::make_unique<Rendering::Renderer>(std::make_unique<Rendering::OpenGLBackend>());
 }
 
 Application::~Application() {
@@ -42,6 +46,9 @@ void Application::PushLayer(Layer* layer) {
 
 void Application::Close() {
     m_Running = false;
+
+    glfwTerminate();
+    exit(0);
 }
 
 void Application::OnEvent(Event& event) {
@@ -51,9 +58,9 @@ void Application::OnEvent(Event& event) {
     dispatcher.Dispatch<Events::WindowResizeEvent>([this](Events::WindowResizeEvent& resize) {return OnWindowResize(resize);});
     dispatcher.Dispatch<Events::WindowCloseEvent>([this](Events::WindowCloseEvent&) {Close(); return true;});
 
-    for (auto it= m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
+    for (const auto& it : std::views::reverse(m_LayerStack)) {
         if (event.Handled) break;
-        (*it)->OnEvent(event);
+        it->OnEvent(event);
     }
 }
 
@@ -90,9 +97,31 @@ void Application::Run() {
 
             m_SceneManager.OnUpdate(deltaTime);
 
+            const auto fb = m_Window->getFrameBufferSize();
+            const float aspect = fb.y > 0 ? float(fb.x) / float(fb.y) : 1.0f;
+
+            std::optional<Rendering::Camera> sceneCam;
+            const Rendering::Camera* camera = m_CameraOverride;
+
+            if (!camera && m_SceneManager.HasActiveScene()) {
+                sceneCam = m_SceneManager.GetActiveScene().GetPrimaryCamera(aspect);
+                if (sceneCam) camera = &*sceneCam;
+            }
+
+            //TODO: When camera is null frameBuffers not cleared :c
+
+            if (camera) {
+                m_Renderer->Begin(*camera);
+                m_SceneManager.OnRender(*m_Renderer);
+                for (Layer* layer : m_LayerStack) {
+                    //TODO: Might be able to remove
+                    layer->OnRender();
+                }
+                m_Renderer->End();
+            }
+
             ImGuiLayer::Begin();
             for (Layer* layer : m_LayerStack) {
-                layer->OnRender();
                 layer->OnImGuiRender();
             }
             ImGuiLayer::End();

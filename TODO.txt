@@ -5,6 +5,7 @@ Basic 2D Editor/Level Layout Software
 
 Architecture:
 - Move Renderer from Layers into Application Instance
+- Remove OnRender from Layers maybe
 
 ECS
 - Add Scene Switch

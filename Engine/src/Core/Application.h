@@ -39,6 +39,8 @@ namespace Engine::Core {
         bool OnWindowResize(Events::WindowResizeEvent& e);
 
         SceneManager& GetSceneManager() {return m_SceneManager;}
+        Rendering::Renderer& GetRenderer() const {return *m_Renderer;}
+        void SetCameraOverride(Rendering::Camera* camera) {m_CameraOverride = camera;}
 
         void Close();
 
@@ -51,6 +53,8 @@ namespace Engine::Core {
 
         ApplicationSpecification m_Specs;
         std::unique_ptr<Window> m_Window;
+        std::unique_ptr<Rendering::Renderer> m_Renderer;
+        Rendering::Camera* m_CameraOverride = nullptr;
         std::vector<Layer*> m_LayerStack;
         ImGuiLayer* m_ImGuiLayer;
 
