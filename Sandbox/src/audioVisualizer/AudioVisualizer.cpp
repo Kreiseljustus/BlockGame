@@ -23,7 +23,7 @@ void AudioVisualizer::OnRenderImGui() {
     ImGui::PlotHistogram("test", m_Analyzer.bands.data(), Analyzer::BANDS, 0, nullptr, 0.0f, 1.0f, ImVec2(400, 100));
 }
 
-void AudioVisualizer::OnSceneUpdate() {
+void AudioVisualizer::OnSceneUpdate(float dt) {
     float samples[Analyzer::N];
     m_Music.GetComponent<Engine::Components::AudioSourceComponent>().GetLatestSamples(samples, Analyzer::N);
     m_Analyzer.Update(samples);

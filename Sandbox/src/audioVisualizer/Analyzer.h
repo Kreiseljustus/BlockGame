@@ -38,7 +38,7 @@ inline void FFT(std::vector<std::complex<float>>& a) {
 class Analyzer {
 public:
     static constexpr int N = 2048; //Amount of samples to look at
-    static constexpr int BANDS = 128,; //Amount of bars for visualizer
+    static constexpr int BANDS = 128; //Amount of bars for visualizer
     std::vector<float> bands = std::vector<float>(BANDS,0.0f);
 
     void Update(const float* samples) {

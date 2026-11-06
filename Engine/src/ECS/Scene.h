@@ -48,7 +48,7 @@ namespace Engine {
         virtual void OnLoad() {}
         virtual void OnUnload() {}
         //After ECS
-        virtual void OnSceneUpdate() {};
+        virtual void OnSceneUpdate(float dt) {};
 
     private:
         entt::registry m_Registry;

@@ -1,4 +1,5 @@
 
+#include "astro/AstroLayer.h"
 #include "Core/Application.h"
 #include "minecraft/BlockGame.h"
 #include "audioVisualizer/AVLayer.h"
@@ -10,6 +11,6 @@ using namespace Engine::Core;
 
 int main() {
 	Application app{ApplicationSpecification()};
-	app.PushLayer(new AVLayer());
+	app.PushLayer(new AstroLayer());
 	app.Run();
 }

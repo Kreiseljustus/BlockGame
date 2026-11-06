@@ -15,7 +15,7 @@ public:
     ~AudioVisualizer();
     void OnRenderImGui();
 protected:
-    void OnSceneUpdate() override;
+    void OnSceneUpdate(float dt) override;
     void OnLoad() override;
 private:
     Engine::GameObject m_Music;
